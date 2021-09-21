@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>img test</title>
+        <meta charset="utf-8">
+        <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+        <script>
+            let url = "http://127.0.0.1/api/code/"
+            let xhr = new XMLHttpRequest();
+            let img = $('img')
+            function refreshCode() {
+                xhr.open("get", url, true);
+                xhr.responseType = "blob";
+                xhr.onload = function() {
+                    if (this.status == 200) {
+                        var blob = this.response;
+                        var img = document.createElement("img");
+                        img.onload = function(e) {
+                        window.URL.revokeObjectURL(img.src); 
+                        };
+                        img.src = window.URL.createObjectURL(blob);
+            　　　　　　　$(".main").html(img);
+                    } 
+                };
+                xhr.send();
+                setTimeout("refreshCode()", 30*1000);
+            }    
+            refreshCode();
+        </script>
+        <style>
+            .box {
+                width: 100%;
+                min-height: 100vh;   
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .main {
+                width: 200px;
+                height: 200px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                border: 1px solid rgb(192, 192, 192);
+                border-radius: 3px;
+            }
+
+            img{
+                width: auto;
+                height: auto;
+                max-width: 100%;
+                max-height: 100%;  
+            }
+        </style>
+    </head>
+    <body>
+        <div class="box">
+            <div class="main">
+                
+            </div>
+        </div>
+    </body>
+</html>
