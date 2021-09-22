@@ -8,3 +8,5 @@ def getMD5(info) -> str:
     return tool.hexdigest() 
 
 
+if __name__ == "__main__":
+    print(getMD5("user"))

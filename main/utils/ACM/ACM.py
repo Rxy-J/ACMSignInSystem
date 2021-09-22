@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 class ACMUser():
     def __init__(self, 
                  username: str, 
-                 password: str,
+                 passhash: str,
                  name: str,
                  department: str=None, 
                  major: str=None, 
@@ -16,7 +16,7 @@ class ACMUser():
                  email: bool=None) -> None:
         
         self.__username = username # 用户名/学号
-        self.__password = password # 密码
+        self.__passhash = passhash # 密码，必须为MD5码
         self.__name = name # 姓名
         self.__department = department # 学院
         self.__major = major # 专业
@@ -32,8 +32,8 @@ class ACMUser():
     def getUsername(self) -> str:
         return self.__username
 
-    def getPassword(self) -> str:
-        return self.__password
+    def getPasshash(self) -> str:
+        return self.__passhash
 
     def getName(self) -> str:
         return self.__name
@@ -77,7 +77,7 @@ class ACMUser():
         return self.__email
 
     def getAll(self) -> tuple:
-        return (self.__username, self.__password,self.__name,  self.__department, self.__major, self.__joinTime, self.__allTrainningTime, self.__isTrainning, self.__currRecordId, self.__admin, self.__email)
+        return (self.__username, self.__passhash,self.__name,  self.__department, self.__major, self.__joinTime, self.__allTrainningTime, self.__isTrainning, self.__currRecordId, self.__admin, self.__email)
 
     def setIsTrainning(self, isTrainning: bool) -> None:
         self.__isTrainning = isTrainning
@@ -108,8 +108,8 @@ class ACMUser():
         }
 
     def __repr__(self):
-        return "username=%s, password=%s, name=%s, department=%s, major=%s, joinTime=%s, allTrainningTime=%s, isTrainning=%s, currRecordId=%s, admin=%s, email=%s" % (self.__username, 
-                                                                                                                                                                    self.__password,
+        return "username=%s, passhash=%s, name=%s, department=%s, major=%s, joinTime=%s, allTrainningTime=%s, isTrainning=%s, currRecordId=%s, admin=%s, email=%s" % (self.__username, 
+                                                                                                                                                                    self.__passhash,
                                                                                                                                                                     self.__name, 
                                                                                                                                                                     self.__department, 
                                                                                                                                                                     self.__major, 

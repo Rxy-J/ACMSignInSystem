@@ -10,12 +10,12 @@ from main.Exception.Error import DbError
 class DAOForUser():
 
     # 添加用户，以ACMUser为单位进行添加
-    def addUser(user: ACMUser):
+    def addUser(user: ACMUser) -> int:
         try:
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
-            sql = "insert into user(username, password, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, email);"
+            sql = "insert into user(username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, email);"
 
             if user.getIsTrainning():
                 status = "Y"
@@ -28,7 +28,7 @@ class DAOForUser():
                 admin = "N"
 
             cursor.execute(sql, (user.getUsername(),
-                                       user.getPassword(), 
+                                       user.getPasshash(), 
                                        user.getName(),
                                        user.getdepartment(),
                                        user.getMajor(),
@@ -39,6 +39,7 @@ class DAOForUser():
                                        admin,
                                        user.getEmail()))
             db.commit()
+            return cursor.lastrowid
         except Exception as e:
             db.rollback()
             raise DbError(str(e))
@@ -89,14 +90,14 @@ class DAOForUser():
             DBUtils.closeConnection(db)
                         
     # 根据用户名/学号更改密码
-    def updatePwdByUsername(username: str, password: str):
+    def updatePwdByUsername(username: str, passhash: str):
         try:
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
-            sql = "update user set password=%s where username=%s;"
+            sql = "update user set passhash=%s where username=%s;"
 
-            cursor.execute(sql, (password, username))
+            cursor.execute(sql, (passhash, username))
             db.commit()
         except Exception as e:
             db.rollback()
@@ -135,13 +136,12 @@ class DAOForUser():
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
-            sql = "select username, password, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where username=%s;"
+            sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where username=%s;"
 
             cursor.execute(sql, (username))
             unformatedUser = cursor.fetchone()
             
             if unformatedUser != None:
-                print(unformatedUser)
                 return ACMUser(*unformatedUser)
             else:
                 return None
@@ -151,14 +151,14 @@ class DAOForUser():
             DBUtils.closeConnection(db)
 
     # 根据当前是否在训练状态查询
-    def getUsersByStatus(isTrainning: bool):
+    def getUsersByStatus(isTrainning: bool) -> list:
         try:
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
             users = []
 
-            sql = "select username, password, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where isTrainning=%s;"
+            sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where isTrainning=%s order by id;"
 
             if isTrainning:
                 status = "Y"
@@ -178,14 +178,14 @@ class DAOForUser():
             DBUtils.closeConnection(db)
 
     # 根据用户权限组查询
-    def getUsersByPriv(admin: bool):
+    def getUsersByPriv(admin: bool) -> list:
         try:
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
             users = []
 
-            sql = "select username, password, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where admin=%s;"
+            sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where admin=%s;"
 
             if admin:
                 status = "Y"
@@ -211,7 +211,7 @@ class DAOForUser():
             cursor = db.cursor() # 游标
 
             users = []
-            sql = "select username, password, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user;"
+            sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user;"
 
             cursor.execute(sql)
             
@@ -237,7 +237,7 @@ class DAOForTrainRecord():
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
-            sql = "insert into trainningRecord(username, startTime, endTime, valid, isRecord, timeLength) values (%s, %s, %s, %s, %s, %s)"
+            sql = "insert into trainningrecord(username, startTime, endTime, valid, isRecord, timeLength) values (%s, %s, %s, %s, %s, %s)"
 
             if record.getValid():
                 valid = "Y"
@@ -269,7 +269,7 @@ class DAOForTrainRecord():
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
-            sql = "delete from trainningRecord where id=%s"
+            sql = "delete from trainningrecord where id=%s"
 
             cursor.execute(sql, (id,))
             db.commit()
@@ -285,7 +285,7 @@ class DAOForTrainRecord():
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
-            sql = "update trainningRecord set endTime=%s, valid=%s, isRecord=%s, timeLength=%s where id=%s;"
+            sql = "update trainningrecord set endTime=%s, valid=%s, isRecord=%s, timeLength=%s where id=%s;"
 
             if trainningRecord.getValid():
                 status = "Y"
@@ -315,7 +315,7 @@ class DAOForTrainRecord():
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
-            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningRecord where id=%s;"
+            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord where id=%s;"
 
             cursor.execute(sql, (id,))
 
@@ -329,12 +329,13 @@ class DAOForTrainRecord():
         finally:
             DBUtils.closeConnection(db)
 
+    # 根据用户名查询训练记录
     def getTrainRecordByUsername(username: str) -> list:
         try:
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
-            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningRecord where username=%s;"
+            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord where username=%s;"
 
             cursor.execute(sql, (username,))
 
@@ -349,12 +350,13 @@ class DAOForTrainRecord():
         finally:
             DBUtils.closeConnection(db)
 
+    # 获取全部训练记录
     def getAllTrainRecords() -> list:
         try:
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
-            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningRecord;"
+            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord;"
 
             cursor.execute(sql)
 
@@ -368,7 +370,6 @@ class DAOForTrainRecord():
             raise DbError(str(e))
         finally:
             DBUtils.closeConnection(db)
-
 
 
 

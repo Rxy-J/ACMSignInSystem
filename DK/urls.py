@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path
 
 from main.proc import api, getPage
@@ -22,16 +21,20 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     
     # 页面
-    path("getCode/", getPage.getCodePage),
-    path("login/", getPage.getLoginPage),
+    # path("getCode/", getPage.getCodePage),
+    # path("login/", getPage.getLoginPage),
 
     # API
-    path("api/getcode/", api.getCode),
+    path("api/checkusername", api.checkUsername),
+    path("api/getemailcode", api.getEmailCode),
+    path("api/register/", api.register),
     path("api/login/", api.login),
+    path("api/logout/", api.logout),
     path("api/signin/", api.signIn),
+    path("api/getcode/", api.getCode),
     path("api/getuserinfo/", api.getUserInfo),
     path("api/getrecord/", api.getRecord),
     path("api/getall/", api.getAll),
-    path("api/logout/", api.logout),
+    
     # path("api/updatepwd/", api.updatePassword)
 ]
