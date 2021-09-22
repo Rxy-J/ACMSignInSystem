@@ -1,4 +1,4 @@
-var loginUrl = "https://www.orangej.xyz/api/login/"
+var loginUrl = "../api/login/"
 
 $("#submit").click(function() {
     let username = $("#username").val();
@@ -16,10 +16,10 @@ $("#submit").click(function() {
         "type" : "post",
         "data" : response,
         "success" : function(res) {
-            alert(res["msg"])
+            alert(res["msg"]);
         },
         "success" : function(res) {
-            alert(res["msg"])
+            alert(res["msg"]);
         }
     })
 

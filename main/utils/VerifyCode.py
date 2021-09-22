@@ -9,8 +9,8 @@ from main.Config.GlobalConfig import EMAIL_VERIFY_CODE_TIME
 
 # 邮件验证码
 class EmailKeyGen(threading.Thread):
-    def __init__(self, codeLength: int) -> None:
-        super().__init__()
+    def __init__(self, codeLength: int, daemon: bool=True) -> None:
+        super().__init__(daemon=daemon)
         self.__codeLength = codeLength
         self.__codeList = []
 
@@ -38,8 +38,8 @@ class EmailKeyGen(threading.Thread):
 # 管理员验证码
 class TOTP(threading.Thread):
     
-    def __init__(self, key: str, codeLength: int) -> None:
-        super().__init__()
+    def __init__(self, key: str, codeLength: int, daemon: bool=True) -> None:
+        super().__init__(daemon=daemon)
         self.__key = key
         self.__currTime = None
         self.__preCode = None

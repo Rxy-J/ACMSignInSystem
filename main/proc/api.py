@@ -138,7 +138,8 @@ def login(request) -> JsonResponse:
 
         if user == None:
             raise Exception("用户不存在")
-        if getMD5(user.getPasshash()) != password:
+            
+        if getMD5(password) != user.getPasshash():
             raise Exception("密码错误")
 
         if user.getAdmin():
