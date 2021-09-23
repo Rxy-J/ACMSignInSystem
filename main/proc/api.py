@@ -183,6 +183,8 @@ def login(request: HttpRequest) -> JsonResponse:
         if username == None or password == None:
             raise Exception("请检查账号或密码")
 
+        if request.session.session_key == None:
+            request.session.create()
         request.session["username"] = username
         request.session["isLogin"] = False
         request.session["admin"] = False
