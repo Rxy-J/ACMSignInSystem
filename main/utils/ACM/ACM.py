@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # ACM基地用户
 class ACMUser():
@@ -9,7 +9,7 @@ class ACMUser():
                  department: str=None, 
                  major: str=None, 
                  joinTime: datetime=None, 
-                 allTrainningTime: str=None, 
+                 allTrainningTime: int=0, 
                  isTrainning: bool=False, 
                  currRecordId: str=None, 
                  admin: bool=False,
@@ -47,11 +47,11 @@ class ACMUser():
     def getJoinTime(self) -> datetime:
         return self.__joinTime
 
-    def getAllTrainningTime(self) -> str:
+    def getAllTrainningTime(self) -> int:
         return self.__allTrainningTime
     
     def getFormatedAllTrainningTime(self) -> str:
-        t = eval(self.__allTrainningTime)
+        t = self.__allTrainningTime
 
         d = t % (3600 * 24)
         t -= d * 3600 * 24
@@ -85,7 +85,7 @@ class ACMUser():
     def setCurrRecordId(self, currRecordId: str) -> None:
         self.__currRecordId = currRecordId
     
-    def setAllTrainningTime(self, allTrainningTime: str) -> None:
+    def setAllTrainningTime(self, allTrainningTime: int) -> None:
         self.__allTrainningTime = allTrainningTime
     
     def parserBool(self, source: str) -> bool:
@@ -131,7 +131,7 @@ class TrainningRecord():
                  endTime: datetime=None,
                  valid: bool=False,
                  isRecord: bool=False,
-                 timeLength: str="0",
+                 timeLength: int=0,
                  id: int=None) -> None:
         self.__id = id # 记录id
         self.__username = username # 用户名
@@ -159,11 +159,11 @@ class TrainningRecord():
     def getIsRecord(self) -> bool:
         return self.__isRecord
         
-    def getTimeLength(self) -> str:
+    def getTimeLength(self) -> int:
         return self.__timeLength
         
     def getFormatedTimeLength(self) -> str:
-        t = eval(self.__timeLength)
+        t = self.__timeLength
 
         d = t % (3600 * 24)
         t -= d * 3600 * 24

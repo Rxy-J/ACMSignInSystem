@@ -21,7 +21,7 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     
     # 页面
-    # path("getCode/", getPage.getCodePage),
+    path("getCode/", getPage.getCodePage),
     path("login/", getPage.getLoginPage),
 
     # API

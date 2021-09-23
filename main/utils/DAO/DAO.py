@@ -12,6 +12,7 @@ class DAOForUser():
     # 添加用户，以ACMUser为单位进行添加
     def addUser(user: ACMUser) -> int:
         try:
+            db = None
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
@@ -49,6 +50,7 @@ class DAOForUser():
     # 根据用户名/学号删除用户
     def deleteUserByUsername(username: str) -> bool:
         try:
+            db = None
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
@@ -65,6 +67,7 @@ class DAOForUser():
     # 根据用户名/学号更新个人信息/状态
     def updateUserInfoByUsername(user: ACMUser):
         try:
+            db = None
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
@@ -92,6 +95,7 @@ class DAOForUser():
     # 根据用户名/学号更改密码
     def updatePwdByUsername(username: str, passhash: str):
         try:
+            db = None
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
@@ -108,6 +112,7 @@ class DAOForUser():
     # 根据用户名/学号更改用户权限组
     def updatePrivByUsername(username: str, admin: bool):
         try:
+            db = None
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
             
@@ -133,6 +138,7 @@ class DAOForUser():
     # 根据用户名/学号查找用户
     def getUserByUsername(username: str):
         try:
+            db = None
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
@@ -153,12 +159,13 @@ class DAOForUser():
     # 根据当前是否在训练状态查询
     def getUsersByStatus(isTrainning: bool) -> list:
         try:
+            db = None
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
             users = []
 
-            sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where isTrainning=%s order by id;"
+            sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where isTrainning=%s order by uid;"
 
             if isTrainning:
                 status = "Y"
@@ -180,12 +187,13 @@ class DAOForUser():
     # 根据用户权限组查询
     def getUsersByPriv(admin: bool) -> list:
         try:
+            db = None
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
             users = []
 
-            sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where admin=%s;"
+            sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where admin=%s order by uid;"
 
             if admin:
                 status = "Y"
@@ -207,11 +215,12 @@ class DAOForUser():
     # 获取user表全部信息
     def getAll(self):
         try:
+            db = None
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
             users = []
-            sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user;"
+            sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user order by uid;"
 
             cursor.execute(sql)
             
@@ -234,6 +243,7 @@ class DAOForTrainRecord():
     # 添加签到记录
     def addTrainRecord(record: TrainningRecord) -> int:
         try:
+            db = None
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
@@ -266,6 +276,7 @@ class DAOForTrainRecord():
     # 根据记录id删除记录
     def deleteTrainRecordById(id: int) -> bool:
         try:
+            db = None
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
@@ -282,6 +293,7 @@ class DAOForTrainRecord():
     # 根据记录id更新记录信息
     def updateRecordById(trainningRecord: TrainningRecord):
         try:
+            db = None
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
@@ -312,10 +324,11 @@ class DAOForTrainRecord():
     # 根据id获取训练记录
     def getTrainRecordById(id: int) -> TrainningRecord:
         try:
+            db = None
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
-            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord where id=%s;"
+            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord where id=%s order by id;"
 
             cursor.execute(sql, (id,))
 
@@ -332,10 +345,11 @@ class DAOForTrainRecord():
     # 根据用户名查询训练记录
     def getTrainRecordByUsername(username: str) -> list:
         try:
+            db = None
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
-            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord where username=%s;"
+            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord where username=%s order by id;"
 
             cursor.execute(sql, (username,))
 
@@ -353,10 +367,11 @@ class DAOForTrainRecord():
     # 获取全部训练记录
     def getAllTrainRecords() -> list:
         try:
+            db = None
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
-            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord;"
+            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord order by id;"
 
             cursor.execute(sql)
 

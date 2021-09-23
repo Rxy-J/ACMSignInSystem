@@ -115,21 +115,18 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
+# Static files (CSS, JavaScript, Images) -> 静态文件
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'  # 引擎
+# Session 设置
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'  # 引擎
 SESSION_CACHE_ALIAS = 'default'                            # 使用的缓存别名（默认内存缓存，也可以是memcache），此处别名依赖缓存的设置
  
  
@@ -138,6 +135,6 @@ SESSION_COOKIE_PATH = "/"                                 # Session的cookie保�
 SESSION_COOKIE_DOMAIN = None                              # Session的cookie保存的域名
 SESSION_COOKIE_SECURE = False                             # 是否Https传输cookie
 SESSION_COOKIE_HTTPONLY = True                            # 是否Session的cookie只支持http传输
-SESSION_COOKIE_AGE = 1*52*7*24*3600                       # Session的cookie失效日期
+SESSION_COOKIE_AGE = 2*7*24*3600                          # Session的cookie失效日期
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False                   # 是否关闭浏览器使得Session过期
 SESSION_SAVE_EVERY_REQUEST = False                        # 是否每次请求都保存Session，默认修改之后才保存

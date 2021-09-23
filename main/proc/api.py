@@ -1,41 +1,77 @@
+
+# ----------------------
+# 数据API
+#
+# ----------------------
+
+
 import base64
 import re
 
 from datetime import datetime
-from django.http.response import JsonResponse, HttpResponse, HttpResponseNotFound
 
-from DK import static # 加载生成器
+from django.http import HttpRequest
+from django.http.response import (HttpResponse, HttpResponseNotFound,
+                                  JsonResponse)
+from django.middleware import csrf
 
-from main.utils.QRCode import getQRCode
-from main.utils.MD5 import getMD5
-from main.utils.Mail import SendMail
+from DK import static  # 加载生成器
+from main.proc.getPage import getLoginPage
+from main.Config.GlobalConfig import (DEFAULT_RESPONSE_TEMPLATE,
+                                      EMAIL_VERIFY_CODE_TIME,
+                                      MAX_TRAINNING_TIME, 
+                                      MAX_VERIFY_TIME_GAP,
+                                      VERIFY_CODE_CONTEXT,
+                                      DEFAULT_ADMIN_EXPRIE_TIME_BROWSER,
+                                      DEFAULT_USER_EXPRIE_TIME_BROWSER,
+                                      DEFAULT_ADMIN_EXPRIE_TIME_MP,
+                                      DEFAULT_USER_EXPRIE_TIME_MP)
 from main.utils.ACM.ACM import ACMUser, TrainningRecord
-from main.utils.DAO.DAO import DAOForUser, DAOForTrainRecord
-from django.http import request
-
-from main.Config.GlobalConfig import DEFAULT_RESPONSE_TEMPLATE, MAX_TRAINNING_TIME, MAX_VERIFY_TIME_GAP, EMAIL_VERIFY_CODE_TIME, VERIFY_CODE_CONTEXT
+from main.utils.DAO.DAO import DAOForTrainRecord, DAOForUser
+from main.utils.Mail import SendMail
+from main.utils.MD5 import getMD5
+from main.utils.QRCode import getQRCode
 
 # session检查
-def checkSession(request):
-    if not request.session.exists(request.session.session_key): # session存在
-        raise Exception("登录过期，请重新登录")
-    if (not "username" in request.session) or (request.POST["username"] != request.session["username"]): # 操作本人
-        raise Exception("操作用户错误，请重新登录")
-    if not request.session["isLogin"]: # 已登录
-        raise Exception("当前未登录，请登陆后再操作")
+def checkSession(request: HttpRequest) -> bool:
+    if request.session.exists(request.session.session_key) and request.session["isLogin"]: # 已登录
+        return True
+    else:
+        return False
 
 # 管理员检查
-def checkAdmin(request):
-    if not request.session.get("admin"):
-        raise Exception("您不是管理员，请使用管理员账号登录")
+def checkAdmin(request: HttpRequest) -> bool:
+    if request.session.get("admin"):
+        return True
+    else:
+        return False
 
-# 用户名检验
-def checkUsername(request) -> JsonResponse:
+# 检查来源是否为小程序
+def checkFromMP(request: HttpRequest) -> bool:
+    MPRegex = "miniProgram"
+    ua = request.headers["User-Agent"]
+    if ua.find(MPRegex) == -1:
+        return False
+    else:
+        return True
+
+# 清除过期session
+def clearSession(request: HttpRequest):
+    request.session.clear_expired()
+
+# ------------------------------
+
+# 用户名检验，用户名唯一
+# POST
+def checkUsername(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
 
     try :
-        username = request.POST["username"]
+        username = request.POST.get("username")
         usable = True
+
+        if not username:
+            raise Exception("用户名不可用")
 
         user = DAOForUser.getUserByUsername(username)
         if not user:
@@ -49,17 +85,22 @@ def checkUsername(request) -> JsonResponse:
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)
+        response["data"] = {}
     
     return JsonResponse(response)
 
 # 邮箱验证码
-def getEmailCode(request) -> JsonResponse:
+# POST
+def getEmailCode(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
-    emailRegex = r"[-_\w\.]{0,64}@([-\w]{1,63}\.)*[-\w]{1,63}"
+    emailRegex = r"[-_\w\.]{0,64}@[-\w]{1,63}\.*[-\w]{1,63}"
 
     try:
-        username = request.POST["username"]
-        email = request.POST["email"]
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+
+        if username == None:
+            raise Exception("请输入用户名")
 
         if not len(re.findall(emailRegex, email)):
             raise Exception("请输入格式正确的邮箱")
@@ -74,29 +115,32 @@ def getEmailCode(request) -> JsonResponse:
 
         response["status"] = "success"
         response["msg"] = "ok"
-        
+
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)
 
+    response["data"] = {}
     return JsonResponse(response)
 
 # 注册
-def register(request) -> JsonResponse:
-
+# POST
+def register(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
 
+    clearSession()
+
     try:
-        username = request.POST["username"]
-        password = request.POST["password"]
-        name = request.POST["name"]
-        department = request.POST["department"]
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        name = request.POST.get("name")
+        department = request.POST.get("department")
         major = request.POST["major"]
         joinTime = request.POST["joinTime"]
-        adminVerify = request.POST["adminVerify"]
-        admin = request.POST["admin"]
-        email = request.POST["email"]
-        emailVerify = request.POST["emailVerify"]
+        adminVerify = request.POST.get("adminVerify")
+        admin = request.POST.get("admin")
+        email = request.POST.get("email")
+        emailVerify = request.POST.get("emailVerify")
 
         # 邮箱验证
         if not emailVerify in static.EMAIL_CODE.getCodeList():
@@ -119,21 +163,30 @@ def register(request) -> JsonResponse:
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)
+        response["data"] = {}
     
     return JsonResponse(response)
 
 # 登录
-def login(request) -> JsonResponse:
+# POST
+def login(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
 
-    username = request.POST["username"]
-    password = request.POST["password"]
-    
-    request.session["username"] = username
-    request.session["isLogin"] = False
-    request.session["admin"] = False
-    
+    clearSession() # 先清除过期Session
+
     try:
+
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        source = request.POST.get("from")
+        
+        if username == None or password == None:
+            raise Exception("请检查账号或密码")
+
+        request.session["username"] = username
+        request.session["isLogin"] = False
+        request.session["admin"] = False
+
         user = DAOForUser.getUserByUsername(username)
 
         if user == None:
@@ -144,6 +197,17 @@ def login(request) -> JsonResponse:
 
         if user.getAdmin():
             request.session["admin"] = True
+
+        if source == "MP":
+            if request.session["admin"]:
+                request.session.set_expiry(DEFAULT_ADMIN_EXPRIE_TIME_MP)
+            else:
+                request.session.set_expiry(DEFAULT_USER_EXPRIE_TIME_MP)
+        else:
+            if request.session["admin"]:
+                request.session.set_expiry(DEFAULT_ADMIN_EXPRIE_TIME_BROWSER)
+            else:
+                request.session.set_expiry(DEFAULT_USER_EXPRIE_TIME_BROWSER)
 
         request.session["isLogin"] = True
 
@@ -158,23 +222,41 @@ def login(request) -> JsonResponse:
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)
+        response["data"] = {}
 
     return JsonResponse(response)
 
 # 注销
-def logout(request) -> JsonResponse:
+# GET
+def logout(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
-    response["status"] = "success"
-    response["msg"] = "ok"    
+    try:
+        request.session.delete(request.session.session_key)
+        clearSession()
+
+        response["status"] = "success"
+        response["msg"] = "ok"
+    except Exception as e:
+        response["status"] = "error"
+        response["msg"] = str(e)
+        
+    response["data"] = {}
     return JsonResponse(response)
 
 # 获取签到二维码
-def getCode(request) -> HttpResponse:
+# GET
+def getCode(request: HttpRequest) -> HttpResponse:
     try:
-        checkSession(request)
-        checkAdmin(request)
+        if not checkSession(request):
+            if checkFromMP(request):
+                raise Exception("尚未登录")
+            else:
+                return getLoginPage()
+
+        if not checkAdmin(request):
+            raise Exception("您不是管理员，请使用管理员账号访问")
         
-        csrf_token = request.META["CSRF_COOKIE"]
+        csrf_token = csrf.get_token(request)
         time = datetime.now().strftime("%Y%m%d%H%M%S")
         verifyToken = getMD5(base64.b64encode(time.encode()).decode())
 
@@ -194,27 +276,31 @@ def getCode(request) -> HttpResponse:
         return  HttpResponseNotFound(str(response).encode())
 
 # 签到/签退
-def signIn(request) -> JsonResponse:
-
+# POST
+def signIn(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
-
-    vToken = request.POST["token"]
-    vTime = request.POST["time"]
-    info = request.POST["info"]
-    
-    cToken = getMD5(base64.b64encode(vTime.encode()).decode())
-    cTime = datetime.now()
-    gap = cTime - datetime.strptime(vTime, "%Y%m%d%H%M%S")
-
     try:
-        checkSession(request)
+        if not checkSession(request):
+            if checkFromMP(request):
+                raise Exception("尚未登录")
+            else:
+                return getLoginPage()
 
-        user = DAOForUser.getUserByUsername(info["username"])
+        vToken = request.POST.get("token")
+        vTime = request.POST.get("time")
+        # info = request.POST.get("info")
+        
+        if not vTime or not vToken:
+            raise Exception("参数不足")
+
+        cToken = getMD5(base64.b64encode(vTime.encode()).decode())
+        cTime = datetime.now()
+        gap = cTime - datetime.strptime(vTime, "%Y%m%d%H%M%S")
+
+        user = DAOForUser.getUserByUsername(request.session.get("username"))
 
         if user == None:
             raise Exception("用户不存在")
-        if user.getPasshash() != getMD5(info["password"]):
-            raise Exception("用户身份验证失败")
         if vToken != cToken or gap > MAX_VERIFY_TIME_GAP:
             raise Exception("打卡信息校验失败")
            
@@ -272,14 +358,21 @@ def signIn(request) -> JsonResponse:
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)
+        response["data"] = {}
+
     return JsonResponse(response)
 
 # 获取用户信息
-def getUserInfo(request) -> JsonResponse:
+# GET
+def getUserInfo(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
 
     try:
-        checkSession(request)
+        if not checkSession(request):
+            if checkFromMP(request):
+                raise Exception("尚未登录")
+            else:
+                return getLoginPage()
 
         username = request.session.get("username")
         user = DAOForUser.getUserByUsername(username)
@@ -292,18 +385,24 @@ def getUserInfo(request) -> JsonResponse:
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)
+        response["data"] = {}
     
     return JsonResponse(response)
 
 # 获取用户训练记录
-def getRecord(request) -> JsonResponse:
+# GET
+def getRecord(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
     response["data"] = {
         "records" : []
     }
 
     try:
-        checkSession(request)
+        if not checkSession(request):
+            if checkFromMP(request):
+                raise Exception("尚未登录")
+            else:
+                return getLoginPage()
         
         username = request.session.get["username"]
         records = DAOForTrainRecord.getTrainRecordByUsername(username)
@@ -315,19 +414,26 @@ def getRecord(request) -> JsonResponse:
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)
+        response["data"] = {}
 
     return JsonResponse(response)
 
 # 获取全体用户信息
-def getAll(request) -> JsonResponse:
+# GET
+def getAll(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
     response["data"] = {
         "records" : []
     }
 
     try:
-        checkSession(request)
-        checkAdmin(request)
+        if not checkSession(request):
+            if checkFromMP(request):
+                raise Exception("尚未登录")
+            else:
+                return getLoginPage()
+        if not checkAdmin(request):
+            raise Exception("请使用管理员身份登录")
         
 
         users = DAOForUser.getAll()
@@ -339,6 +445,7 @@ def getAll(request) -> JsonResponse:
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)
+        response["data"] = {}
 
     return JsonResponse(response)
 

@@ -16,9 +16,9 @@ $("#submit").click(function() {
         "type" : "post",
         "data" : response,
         "success" : function(res) {
-            alert(res["msg"]);
+            window.location.href = "../getCode"
         },
-        "success" : function(res) {
+        "error" : function(res) {
             alert(res["msg"]);
         }
     })
