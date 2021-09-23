@@ -128,7 +128,7 @@ def getEmailCode(request: HttpRequest) -> JsonResponse:
 def register(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
 
-    clearSession()
+    clearSession(request)
 
     try:
         username = request.POST.get("username")
@@ -172,7 +172,7 @@ def register(request: HttpRequest) -> JsonResponse:
 def login(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
 
-    clearSession() # 先清除过期Session
+    clearSession(request) # 先清除过期Session
 
     try:
 
@@ -232,7 +232,7 @@ def logout(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
     try:
         request.session.delete(request.session.session_key)
-        clearSession()
+        clearSession(request)
 
         response["status"] = "success"
         response["msg"] = "ok"
