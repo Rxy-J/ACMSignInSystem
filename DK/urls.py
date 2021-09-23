@@ -25,8 +25,8 @@ urlpatterns = [
     path("login/", getPage.getLoginPage),
 
     # API
-    path("api/checkusername", api.checkUsername),
-    path("api/getemailcode", api.getEmailCode),
+    path("api/checkusername/", api.checkUsername),
+    path("api/getemailcode/", api.getEmailCode),
     path("api/register/", api.register),
     path("api/login/", api.login),
     path("api/logout/", api.logout),
