@@ -25,15 +25,24 @@ class EmailKeyGen(threading.Thread):
 
     def getCode(self):
         currTime = datetime.now()
-        temp = hashlib.md5(currTime.strftime("%Y%m%d%H%M%S")).hexdigest()
-        temp = str(int(temp[-5:-1], 16))
+        temp = hashlib.md5(currTime.strftime("%Y%m%d%H%M%S").encode()).hexdigest()
+        currCode = temp[-5:-1]
 
-        currCode = temp[(-1-self.__codeLength) : -1]
         self.__codeList.append({
             "code" : currCode,
             "time" : currTime
         })
         return currCode
+
+    def checkCode(self, code: str) -> bool:
+        print(self.__codeList)
+        for i in self.__codeList:
+            print(code)
+            print(i["code"])
+            if code == i["code"]:
+                return True
+        return False
+
 
 # 管理员验证码
 class TOTP(threading.Thread):

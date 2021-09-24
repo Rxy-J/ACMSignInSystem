@@ -16,7 +16,7 @@ class DAOForUser():
             db = DBUtils.getConnection() # 数据库连接
             cursor = db.cursor() # 游标
 
-            sql = "insert into user(username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, email);"
+            sql = "insert into user(username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
 
             if user.getIsTrainning():
                 status = "Y"
@@ -43,7 +43,7 @@ class DAOForUser():
             return cursor.lastrowid
         except Exception as e:
             db.rollback()
-            raise DbError(str(e))
+            raise DbError(str(e)+str(e.__traceback__.tb_lineno))
         finally:
             DBUtils.closeConnection(db)
 
@@ -144,7 +144,7 @@ class DAOForUser():
 
             sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where username=%s;"
 
-            cursor.execute(sql, (username))
+            cursor.execute(sql, (username, ))
             unformatedUser = cursor.fetchone()
             
             if unformatedUser != None:
@@ -213,7 +213,7 @@ class DAOForUser():
             DBUtils.closeConnection(db)
 
     # 获取user表全部信息
-    def getAll(self):
+    def getAll():
         try:
             db = None
             db = DBUtils.getConnection() # 数据库连接

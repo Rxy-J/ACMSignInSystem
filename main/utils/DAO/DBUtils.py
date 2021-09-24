@@ -14,6 +14,8 @@ def getConnection() -> Connection:
             database = MysqlConfig.MYSQL_DATABASE
         )
     except Exception as e:
+        print(str(e))
+        
         raise DbConnectError
 
 def closeConnection(conn: Connection):

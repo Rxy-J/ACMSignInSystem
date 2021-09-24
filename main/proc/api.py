@@ -74,7 +74,7 @@ def checkUsername(request: HttpRequest) -> JsonResponse:
             raise Exception("用户名不可用")
 
         user = DAOForUser.getUserByUsername(username)
-        if not user:
+        if user:
             usable = False
 
         response["status"] = "success"
@@ -135,15 +135,15 @@ def register(request: HttpRequest) -> JsonResponse:
         password = request.POST.get("password")
         name = request.POST.get("name")
         department = request.POST.get("department")
-        major = request.POST["major"]
-        joinTime = request.POST["joinTime"]
+        major = request.POST.get("major")
+        joinTime = request.POST.get("joinTime")
         adminVerify = request.POST.get("adminVerify")
         admin = request.POST.get("admin")
         email = request.POST.get("email")
         emailVerify = request.POST.get("emailVerify")
 
         # 邮箱验证
-        if not emailVerify in static.EMAIL_CODE.getCodeList():
+        if not static.EMAIL_CODE.checkCode(emailVerify):
             raise Exception("邮箱验证码出错")
 
         # 管理员验证码验证
@@ -151,7 +151,7 @@ def register(request: HttpRequest) -> JsonResponse:
             if not (adminVerify == static.ADMIN_CODE.getCurrCode() or adminVerify == static.ADMIN_CODE.getPreCode()):
                 raise Exception("管理员验证码错误")
 
-        user = ACMUser(username=username, password=getMD5(password), name=name, department=department, major=major, joinTime=joinTime, admin=admin, email=email)
+        user = ACMUser(username=username, passhash=getMD5(password), name=name, department=department, major=major, joinTime=joinTime, admin=admin, email=email)
         userId = DAOForUser.addUser(user)
 
         response["status"] = "success"
@@ -243,6 +243,7 @@ def logout(request: HttpRequest) -> JsonResponse:
         response["msg"] = str(e)
         
     response["data"] = {}
+
     return JsonResponse(response)
 
 # 获取签到二维码
@@ -253,7 +254,7 @@ def getCode(request: HttpRequest) -> HttpResponse:
             if checkFromMP(request):
                 raise Exception("尚未登录")
             else:
-                return getLoginPage()
+                return getLoginPage(request)
 
         if not checkAdmin(request):
             raise Exception("您不是管理员，请使用管理员账号访问")
@@ -286,7 +287,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
             if checkFromMP(request):
                 raise Exception("尚未登录")
             else:
-                return getLoginPage()
+                return getLoginPage(request)
 
         vToken = request.POST.get("token")
         vTime = request.POST.get("time")
@@ -374,7 +375,7 @@ def getUserInfo(request: HttpRequest) -> JsonResponse:
             if checkFromMP(request):
                 raise Exception("尚未登录")
             else:
-                return getLoginPage()
+                return getLoginPage(request)
 
         username = request.session.get("username")
         user = DAOForUser.getUserByUsername(username)
@@ -402,10 +403,10 @@ def getRecord(request: HttpRequest) -> JsonResponse:
     try:
         if not checkSession(request):
             if checkFromMP(request):
-                raise Exception("尚未登录")
+                return getLoginPage(request)
             else:
-                return getLoginPage()
-        
+                raise Exception("尚未登录")
+                
         username = request.session.get["username"]
         records = DAOForTrainRecord.getTrainRecordByUsername(username)
         response["status"] = "success"
@@ -433,10 +434,9 @@ def getAll(request: HttpRequest) -> JsonResponse:
             if checkFromMP(request):
                 raise Exception("尚未登录")
             else:
-                return getLoginPage()
+                return getLoginPage(request)
         if not checkAdmin(request):
             raise Exception("请使用管理员身份登录")
-        
 
         users = DAOForUser.getAll()
         response["status"] = "success"
