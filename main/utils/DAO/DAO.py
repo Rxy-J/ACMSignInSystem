@@ -357,7 +357,7 @@ class DAOForTrainRecord():
             records = []
             if unformatedRecords != None:
                 for unformatedRecord in unformatedRecords:
-                    records.append(ACMUser(*unformatedRecord))
+                    records.append(TrainningRecord(*unformatedRecord))
             return records
         except Exception as e:
             raise DbError(str(e))
@@ -379,7 +379,7 @@ class DAOForTrainRecord():
             records = []
             if unformatedRecords != None:
                 for unformatedRecord in unformatedRecords:
-                    records.append(ACMUser(*unformatedRecord))
+                    records.append(TrainningRecord(*unformatedRecord))
             return records
         except Exception as e:
             raise DbError(str(e))

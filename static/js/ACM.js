@@ -107,6 +107,20 @@ $(function () {
         username: $("input#username").val(),
         password: $("input#password").val(),
         csrf_token: $("input[name='csrfmiddlewaretoken']").val()
+      },
+      success: function() {
+        $.ajax({
+          method: 'post',
+          url: '../api/getuserinfo/'
+        })
+        $.ajax({
+          method: 'post',
+          url: '../api/getrecord/'
+        })
+        $.ajax({
+          method: 'post',
+          url: '../api/getall/'
+        })
       }
     })
     // .then(response => {

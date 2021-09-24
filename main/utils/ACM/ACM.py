@@ -21,7 +21,7 @@ class ACMUser():
         self.__department = department # 学院
         self.__major = major # 专业
         self.__joinTime = joinTime # 入队时间
-        self.__allTrainningTime = allTrainningTime # 总训练时长
+        self.__allTrainningTime = allTrainningTime if type(allTrainningTime) == int else eval(allTrainningTime)# 总训练时长
         self.__isTrainning = isTrainning if type(isTrainning) == bool else self.parserBool(isTrainning) # 当前是否在训练
         self.__currRecordId = currRecordId # 当前正在进行训练的训练记录id
         self.__admin = admin if type(admin) == bool else self.parserBool(admin) # 是否为管理员
@@ -53,13 +53,13 @@ class ACMUser():
     def getFormatedAllTrainningTime(self) -> str:
         t = self.__allTrainningTime
 
-        d = t % (3600 * 24)
+        d = int(t / (3600 * 24))
         t -= d * 3600 * 24
 
-        h = t % 3600
+        h = int(t / 3600)
         t -= h * 3600
 
-        m = t % 60
+        m = int(t / 60)
         t -= m * 60
 
         return "{}天{}小时{}分钟{}秒".format(d, h, m, t)
@@ -165,13 +165,13 @@ class TrainningRecord():
     def getFormatedTimeLength(self) -> str:
         t = self.__timeLength
 
-        d = t % (3600 * 24)
+        d = int(t / (3600 * 24))
         t -= d * 3600 * 24
 
-        h = t % 3600
+        h = int(t / 3600)
         t -= h * 3600
 
-        m = t % 60
+        m = int(t / 60)
         t -= m * 60
 
         return "{}天{}小时{}分钟{}秒".format(d, h, m, t)
@@ -198,6 +198,8 @@ class TrainningRecord():
             return False
 
     def getDict(self) -> dict:
+        print(self.getStartTime())
+        print(self.getEndTime())
         return {
             "id" : self.getId(),
             "username" : self.getUsername(),

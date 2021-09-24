@@ -407,12 +407,13 @@ def getRecord(request: HttpRequest) -> JsonResponse:
             else:
                 raise Exception("尚未登录")
                 
-        username = request.session.get["username"]
+        username = request.session.get("username")
         records = DAOForTrainRecord.getTrainRecordByUsername(username)
+        print(records)
         response["status"] = "success"
         response["msg"] = "ok"
         response["data"] = {
-            "records" : records
+            "records" : [i.getDict() for i in records]
         }
     except Exception as e:
         response["status"] = "error"
@@ -442,7 +443,7 @@ def getAll(request: HttpRequest) -> JsonResponse:
         response["status"] = "success"
         response["msg"] = "ok"
         response["data"] = {
-            "users" : users
+            "users" : [ i.getDict() for i in users]
         }
     except Exception as e:
         response["status"] = "error"
