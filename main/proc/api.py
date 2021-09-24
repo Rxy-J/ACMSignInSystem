@@ -373,9 +373,10 @@ def getUserInfo(request: HttpRequest) -> JsonResponse:
     try:
         if not checkSession(request):
             if checkFromMP(request):
-                raise Exception("尚未登录")
-            else:
                 return getLoginPage(request)
+            else:
+                raise Exception("尚未登录")
+                
 
         username = request.session.get("username")
         user = DAOForUser.getUserByUsername(username)
