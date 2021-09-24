@@ -371,6 +371,7 @@ def getUserInfo(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
 
     try:
+        clearSession(request)
         if not checkSession(request):
             if checkFromMP(request):
                 return getLoginPage(request)
@@ -402,6 +403,7 @@ def getRecord(request: HttpRequest) -> JsonResponse:
     }
 
     try:
+        clearSession(request)
         if not checkSession(request):
             if checkFromMP(request):
                 return getLoginPage(request)
@@ -432,11 +434,12 @@ def getAll(request: HttpRequest) -> JsonResponse:
     }
 
     try:
+        clearSession(request)
         if not checkSession(request):
             if checkFromMP(request):
-                raise Exception("尚未登录")
-            else:
                 return getLoginPage(request)
+            else:
+                raise Exception("尚未登录")
         if not checkAdmin(request):
             raise Exception("请使用管理员身份登录")
 
