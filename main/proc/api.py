@@ -226,7 +226,10 @@ def login(request: HttpRequest) -> JsonResponse:
         response["msg"] = str(e)
         response["data"] = {}
 
-    return JsonResponse(response)
+    # return JsonResponse(response)
+    temp = JsonResponse(response)
+    temp.__setitem__("Access-Control-Allow-Origin", "*")
+    return temp
 
 # 注销
 # GET
@@ -455,8 +458,4 @@ def getAll(request: HttpRequest) -> JsonResponse:
         response["data"] = {}
 
     return JsonResponse(response)
-
-
-
-
 

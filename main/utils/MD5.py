@@ -9,4 +9,4 @@ def getMD5(info) -> str:
 
 
 if __name__ == "__main__":
-    print(getMD5("user"))
+    print(getMD5("asdf"))

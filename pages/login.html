@@ -4,8 +4,9 @@
 <head>
     <meta charset="utf-8">
     <title>ACM基地注册页面</title>
+    <link rel="stylesheet" type="text/css" href="http://unpkg.com/view-design/dist/styles/iview.css">
     <link href="../static/css/ACM.css" type="text/css" rel="stylesheet">
-    <script src="https://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
@@ -42,19 +43,18 @@
                     <input type="button" id="wert" value="获取验证码">
                     <input type="text" id="yan" placeholder="验证码">
                 </div>
-                
+
 
                 <input type="password" id="Password" name="password" placeholder="密码：以字母开头只能包含字母、数字和下划线"
                     onblur="validate_password(this.value)">
 
-                <input type="password" id="Password2" name="password2"
-                    placeholder="确认密码">
+                <input type="password" id="Password2" name="password2" placeholder="确认密码">
 
                 <!-- <label for="EnqueueTime">入队时间：</label>
                 <input type="date" id="EnqueueTime" name="enqueuetime" >
                 <input type="hidden" name="csrfmiddlewaretoken" value=""> -->
                 <label for="department">学院：</label>
-                <select name="Department" id="department" >
+                <select name="Department" id="department">
                     <option value="软件学院">软件学院</option>
                     <option value="计算机学院">计算机学院</option>
                     <option value="自动化学院">自动化学院</option>
@@ -75,6 +75,12 @@
                     <option value="外国语学院">外国语学院</option>
                 </select>
                 <button class="btn2">注册</button>
+                <div class="control">
+                    <a href="##" id="control">您是管理员吗？</a>
+                    <input id="adveri" type="text" placeholder="管理员邀请码">
+
+                </div>
+
             </form>
         </div>
         <div class="form-container sign-in-container str">
