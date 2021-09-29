@@ -18,7 +18,7 @@ from django.http.response import (HttpResponse,
 from django.middleware import csrf
 
 from DK import static  # 加载生成器
-from main.proc.getPage import getLoginPage
+# from main.proc.getPage import getLoginPage
 from main.Config.GlobalConfig import (DEFAULT_RESPONSE_TEMPLATE,
                                       EMAIL_VERIFY_CODE_TIME,
                                       MAX_TRAINNING_TIME, 
@@ -229,13 +229,13 @@ def login(request: HttpRequest) -> JsonResponse:
             "sessionId": request.session.session_key,
         }
 
-        return HttpResponseRedirect("../")
+        # return HttpResponseRedirect("../")
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)
         response["data"] = {}
 
-        return JsonResponse(response)
+    return JsonResponse(response)
     # temp = JsonResponse(response)
     # temp.__setitem__("Access-Control-Allow-Origin", "*")
     # return temp
@@ -256,8 +256,8 @@ def logout(request: HttpRequest) -> JsonResponse:
         
     response["data"] = {}
 
-    # return JsonResponse(response)
-    return HttpResponseRedirect("../")
+    return JsonResponse(response)
+    # return HttpResponseRedirect("../")
 
 # 获取签到二维码
 # GET
