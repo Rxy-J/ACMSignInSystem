@@ -9,7 +9,7 @@ from main.Config.GlobalConfig import EMAIL_VERIFY_CODE_TIME
 
 # 邮件验证码
 class EmailKeyGen(threading.Thread):
-    def __init__(self, codeLength: int, daemon: bool=True) -> None:
+    def __init__(self, codeLength: int=4, daemon: bool=True) -> None:
         super().__init__(daemon=daemon)
         self.__codeLength = codeLength
         self.__codeList = []
@@ -26,7 +26,7 @@ class EmailKeyGen(threading.Thread):
     def getCode(self):
         currTime = datetime.now()
         temp = hashlib.md5(currTime.strftime("%Y%m%d%H%M%S").encode()).hexdigest()
-        currCode = temp[-5:-1]
+        currCode = temp[(-1-self.__codeLength):-1]
 
         self.__codeList.append({
             "code" : currCode,
@@ -35,10 +35,7 @@ class EmailKeyGen(threading.Thread):
         return currCode
 
     def checkCode(self, code: str) -> bool:
-        print(self.__codeList)
         for i in self.__codeList:
-            print(code)
-            print(i["code"])
             if code == i["code"]:
                 return True
         return False
@@ -59,6 +56,7 @@ class TOTP(threading.Thread):
         while True:
             self.__preCode = self.__currCode
             self.__currCode = self.process()
+            print(self.__currCode)
             time.sleep(10)
             self.__preCode = None
             time.sleep(20)

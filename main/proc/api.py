@@ -11,7 +11,9 @@ import re
 from datetime import datetime
 
 from django.http import HttpRequest
-from django.http.response import (HttpResponse, HttpResponseNotFound,
+from django.http.response import (HttpResponse, 
+                                  HttpResponseRedirect,
+                                  HttpResponseNotFound,
                                   JsonResponse)
 from django.middleware import csrf
 
@@ -22,6 +24,7 @@ from main.Config.GlobalConfig import (DEFAULT_RESPONSE_TEMPLATE,
                                       MAX_TRAINNING_TIME, 
                                       MAX_VERIFY_TIME_GAP,
                                       VERIFY_CODE_CONTEXT,
+                                      DEFAULT_TITLE,
                                       DEFAULT_ADMIN_EXPRIE_TIME_BROWSER,
                                       DEFAULT_USER_EXPRIE_TIME_BROWSER,
                                       DEFAULT_ADMIN_EXPRIE_TIME_MP,
@@ -100,16 +103,18 @@ def getEmailCode(request: HttpRequest) -> JsonResponse:
         email = request.POST.get("email")
 
         if username == None:
-            raise Exception("请输入用户名")
+            pass
+            # raise Exception("请输入用户名")
 
         if not len(re.findall(emailRegex, email)):
             raise Exception("请输入格式正确的邮箱")
 
         code = static.EMAIL_CODE.getCode()
+        print(code)
         validTime = EMAIL_VERIFY_CODE_TIME.total_seconds() % 60
         context = VERIFY_CODE_CONTEXT.format(username, code, validTime)
 
-        temp = SendMail(receiver=email, title="ACM验证码", mailContext=context)
+        temp = SendMail(receiver=email, title=DEFAULT_TITLE, mailContext=context)
         # temp.start()
         temp.run()
 
@@ -148,8 +153,11 @@ def register(request: HttpRequest) -> JsonResponse:
 
         # 管理员验证码验证
         if admin:
+            admin = True
             if not (adminVerify == static.ADMIN_CODE.getCurrCode() or adminVerify == static.ADMIN_CODE.getPreCode()):
                 raise Exception("管理员验证码错误")
+        else:
+            admin = False
 
         user = ACMUser(username=username, passhash=getMD5(password), name=name, department=department, major=major, joinTime=joinTime, admin=admin, email=email)
         userId = DAOForUser.addUser(user)
@@ -221,12 +229,13 @@ def login(request: HttpRequest) -> JsonResponse:
             "sessionId": request.session.session_key,
         }
 
+        return HttpResponseRedirect("../")
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)
         response["data"] = {}
 
-    return JsonResponse(response)
+        return JsonResponse(response)
     # temp = JsonResponse(response)
     # temp.__setitem__("Access-Control-Allow-Origin", "*")
     # return temp
@@ -247,17 +256,16 @@ def logout(request: HttpRequest) -> JsonResponse:
         
     response["data"] = {}
 
-    return JsonResponse(response)
+    # return JsonResponse(response)
+    return HttpResponseRedirect("../")
 
 # 获取签到二维码
 # GET
 def getCode(request: HttpRequest) -> HttpResponse:
     try:
         if not checkSession(request):
-            if checkFromMP(request):
-                raise Exception("尚未登录")
-            else:
-                return getLoginPage(request)
+            # if checkFromMP(request):
+            raise Exception("尚未登录")
 
         if not checkAdmin(request):
             raise Exception("您不是管理员，请使用管理员账号访问")
@@ -287,10 +295,8 @@ def signIn(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
     try:
         if not checkSession(request):
-            if checkFromMP(request):
-                raise Exception("尚未登录")
-            else:
-                return getLoginPage(request)
+            # if checkFromMP(request):
+            raise Exception("尚未登录")
 
         vToken = request.POST.get("token")
         vTime = request.POST.get("time")
@@ -376,10 +382,9 @@ def getUserInfo(request: HttpRequest) -> JsonResponse:
     try:
         clearSession(request)
         if not checkSession(request):
-            if checkFromMP(request):
-                return getLoginPage(request)
-            else:
-                raise Exception("尚未登录")
+            # if checkFromMP(request):
+            raise Exception("尚未登录")
+                
                 
 
         username = request.session.get("username")
@@ -388,6 +393,7 @@ def getUserInfo(request: HttpRequest) -> JsonResponse:
             response["status"] = "success"
             response["msg"] = "ok"
             response["data"] = user.getDict()
+            response["data"]["isLogin"] = True
         else:
             raise Exception("用户不存在")
     except Exception as e:
@@ -408,14 +414,11 @@ def getRecord(request: HttpRequest) -> JsonResponse:
     try:
         clearSession(request)
         if not checkSession(request):
-            if checkFromMP(request):
-                return getLoginPage(request)
-            else:
-                raise Exception("尚未登录")
+            # if checkFromMP(request):
+            raise Exception("尚未登录")
                 
         username = request.session.get("username")
         records = DAOForTrainRecord.getTrainRecordByUsername(username)
-        print(records)
         response["status"] = "success"
         response["msg"] = "ok"
         response["data"] = {
@@ -439,10 +442,9 @@ def getAll(request: HttpRequest) -> JsonResponse:
     try:
         clearSession(request)
         if not checkSession(request):
-            if checkFromMP(request):
-                return getLoginPage(request)
-            else:
-                raise Exception("尚未登录")
+            # if checkFromMP(request):
+            raise Exception("尚未登录")
+                
         if not checkAdmin(request):
             raise Exception("请使用管理员身份登录")
 

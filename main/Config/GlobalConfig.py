@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 
-
+urlCreator = "{}{}/"
 
 # email验证码生成器参数
 EMAIL_VERIFY_CODE_TIME = timedelta(days=0, hours=0, minutes=30, seconds=0)
@@ -26,7 +26,7 @@ SENDER = "admin@mail.orangej.xyz" # 发件人
 DEFAULT_HOST = "localhost" # 发件HOST
 DEFAULT_TEXT_TYPE = "plain" # 文本格式
 DEFAULT_CODEC = "utf-8" # 文本编码方式
-
+DEFAULT_TITLE = "ACM验证码" # 邮件主题
 VERIFY_CODE_CONTEXT = "{}，您的验证码为{}，{}内有效。如果这并不是您本人的操作请忽略该邮件或马上联系管理员"
 
 # 
@@ -41,3 +41,13 @@ DEFAULT_ADMIN_EXPRIE_TIME_BROWSER = 0
 DEFAULT_ADMIN_EXPRIE_TIME_MP = 7*24*3600
 DEFAULT_USER_EXPRIE_TIME_BROWSER = 0
 DEFAULT_USER_EXPRIE_TIME_MP = 7*24*3600
+
+# 页面路由相关
+ROOT_URL = None # 如 https://www.baidu.com/，最后一定要加/
+UP_LAYER = ".." # 用于返回上一层
+if ROOT_URL:
+    BASE_API_URL = urlCreator.format(ROOT_URL, "api")
+else:
+    BASE_API_URL = urlCreator.format("../", "api")
+
+

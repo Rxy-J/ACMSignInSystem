@@ -3,6 +3,8 @@ import os
 from DK.settings import BASE_DIR
 
 TEMP_PATH = os.path.join(BASE_DIR, "main/temp")
+if not os.path.exists(TEMP_PATH):
+    os.makedirs(TEMP_PATH)
 
 def setTemp(path: str):
     file = os.path.split(path)[-1]

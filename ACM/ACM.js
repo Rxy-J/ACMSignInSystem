@@ -68,7 +68,6 @@ function randomColor() {
     '#ff7675',
     '#fd79a8'];
 
-
   return colors[Math.round(Math.random() * colors.length)];
 }
 
@@ -125,8 +124,12 @@ $(function () {
         password: $("input#password").val(),
         csrf_token: $("input[name='csrfmiddlewaretoken']").val()
       },
-      success:function(response){
-        window.location.href="##";
+      success:function(res){
+        if (res["status"] == "success") {
+          window.location.href="##";
+        } else {
+          showMessage(res["msg"],0);
+        }
       },
       error:function(res){
         showMessage(res["msg"],0);
@@ -162,8 +165,14 @@ $(function () {
         username: $("input#StuID").val(),
         csrf_token: $("input[name='csrfmiddlewaretoken']").val()
       },
-      success:function(response){
-        window.location.href="##";
+      success:function(res){
+        if (res["status"] == "success") {
+          if (!res["data"]["usable"]) {
+            showMessage("用户名已被占用",0);
+          }
+        } else {
+          showMessage(res["msg"],0);
+        }
       },
       error:function(res){
         showMessage(res["msg"],0);
@@ -267,6 +276,7 @@ $(function () {
     //$(".errorMsg2").text("");
   })
 
+  // 管理员邀请码切换
   let s = 0;
   $("#control").click(function(){
     if(s==0){
@@ -303,18 +313,17 @@ $(function () {
           adminVerify: $("adver").val(),
           csrf_token: $("input[name='csrfmiddlewaretoken']").val()
         },
-        success:function(response){
-          window.location.href="##";
+        success:function(res){
+          if (res["status"] == "success") {
+            showMessage("注册成功，您是第"+res["data"]["userId"]+"个用户",1);
+          } else {
+            showMessage(res["msg"],0);
+          }
         },
         error:function(res){
           showMessage(res["msg"],0);
         }
       })
-      // .then(response => {
-      //   console.log(response);
-      // })
-
-      //$(".errorMsg2").text("");
     }
     return false;
   })
@@ -350,7 +359,11 @@ $(function () {
           csrf_token: $("input[name='csrfmiddlewaretoken']").val()
         },
         success:function(response){
-          window.location.href="##";
+          if (res["status"] == "success") {
+            showMessage(res["邮件发送成功请注意查收"],1);
+          } else {
+            showMessage(res["msg"],0);
+          }
         },
         error:function(res){
           showMessage(res["msg"],0);
