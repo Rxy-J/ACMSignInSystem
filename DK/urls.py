@@ -15,14 +15,14 @@ Including another URLconf
 """
 from django.urls import path
 
-from main.proc import api
+from main.proc import api, getPages
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
     
     # 页面
     # path("getCode/", getPage.getCodePage),
-    # path("login/", getPage.getLoginPage),
+    path("", getPages.getIndex),
 
     # API
     path("api/checkusername/", api.checkUsername),

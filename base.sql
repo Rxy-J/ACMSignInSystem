@@ -1,4 +1,4 @@
-CREATE DATABASE ACM;
+CREATE DATABASE IF NOT EXISTS ACM;
 
 USE ACM;
 
@@ -7,14 +7,14 @@ SET CHARSET utf8mb4;
 /* 
  * 创建用户表
  */
-CREATE TABLE user(
+CREATE TABLE IF NOT EXISTS user(
     uid INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(100) NOT NULL UNIQUE,
     passhash VARCHAR(100) NOT NULL,
     name VARCHAR(100) NOT NULL,
     department VARCHAR(100),
     major VARCHAR(100),
-    joinTime datetime,
+    joinTime DATETIME,
     allTrainningTime INT DEFAULT 0,
     isTrainning ENUM("Y", "N") DEFAULT "N",
     currRecordId INT,
@@ -32,11 +32,11 @@ INSERT INTO user(uid, username, passhash, name, allTrainningTime, admin, email) 
 /* 
  * 创建训练记录表
  */
-CREATE TABLE trainningrecord(
+CREATE TABLE IF NOT EXISTS trainningrecord(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(100) NOT NULL,
-    startTime datetime NOT NULL,
-    endTime datetime,
+    startTime DATETIME NOT NULL,
+    endTime DATETIME,
     valid ENUM("Y", "N") DEFAULT "N",
     isRecord ENUM("Y", "N") DEFAULT "N",
     timeLength INT DEFAULT 0
