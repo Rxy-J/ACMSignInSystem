@@ -39,5 +39,5 @@ class DbError(Exception):
     def __init__(self, *args, **kwargs):
         super(DbError, self).__init__(*args, **kwargs)
 
-    # def __str__(self):
-    #     return "数据库操作错误"
+    def __str__(self):
+        return "数据库操作错误"

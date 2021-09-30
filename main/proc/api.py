@@ -114,7 +114,7 @@ def getEmailCode(request: HttpRequest) -> JsonResponse:
         validTime = EMAIL_VERIFY_CODE_TIME.total_seconds() % 60
         context = VERIFY_CODE_CONTEXT.format(username, code, validTime)
 
-        temp = SendMail(receiver=email, title=DEFAULT_TITLE, mailContext=context)
+        temp = SendMail(receiver=email, receiverName=username, title=DEFAULT_TITLE, mailContext=context)
         # temp.start()
         temp.run()
 
