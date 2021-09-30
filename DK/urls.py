@@ -23,6 +23,7 @@ urlpatterns = [
     # 页面
     # path("getCode/", getPage.getCodePage),
     path("", getPages.getIndex),
+    path("", getPages.redirectToIndex),
 
     # API
     path("api/checkusername/", api.checkUsername),
