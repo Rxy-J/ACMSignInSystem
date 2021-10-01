@@ -17,7 +17,7 @@ from django.http.response import (HttpResponse,
                                   JsonResponse)
 from django.middleware import csrf
 
-from DK import static  # 加载生成器
+from ACMSignInSystem import static  # 加载生成器
 # from main.proc.getPage import getLoginPage
 from main.Config.GlobalConfig import (DEFAULT_RESPONSE_TEMPLATE,
                                       EMAIL_VERIFY_CODE_TIME,

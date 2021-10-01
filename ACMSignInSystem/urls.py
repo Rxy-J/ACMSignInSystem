@@ -1,4 +1,4 @@
-"""DK URL Configuration
+"""ACMSignInSystem URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -23,7 +23,11 @@ urlpatterns = [
     # 页面
     # path("getCode/", getPage.getCodePage),
     path("", getPages.getIndex),
-    path("", getPages.redirectToIndex),
+    path("login/", getPages.redirectToIndex),
+    path("user-info/", getPages.redirectToIndex),
+    path("user-train-info/", getPages.redirectToIndex),
+    path("team-train-info/", getPages.redirectToIndex),
+    path("sign-in-out/", getPages.redirectToIndex),
 
     # API
     path("api/checkusername/", api.checkUsername),

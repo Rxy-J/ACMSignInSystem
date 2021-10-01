@@ -1,6 +1,6 @@
 import os
 
-from DK.settings import BASE_DIR
+from ACMSignInSystem.settings import BASE_DIR
 
 TEMP_PATH = os.path.join(BASE_DIR, "main/temp")
 if not os.path.exists(TEMP_PATH):

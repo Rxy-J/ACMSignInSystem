@@ -1,4 +1,4 @@
--- DROP DATABASE  IF EXISTS `202`
+DROP DATABASE IF EXISTS `202`
 
 CREATE DATABASE IF NOT EXISTS `202`;
 
@@ -20,7 +20,10 @@ INSERT INTO locklist(memberId, name, type, admin) VALUES
 ("006", "forAll", "password", "N"),
 ("007", "孟靖轶", "fingerprint", "N"),
 ("008", "李解", "fingerprint", "N"),
-("009", "朱梓宁", "fingerprint", "N");
+("009", "朱梓宁", "fingerprint", "N"),
+("010", "魏辰旭", "fingerprint", "N"),
+("011", "熊于涛", "fingerprint", "N"),
+("012", "冯旭东", "fingerprint", "N");
 
 
 CREATE TABLE IF NOT EXISTS device(
@@ -54,7 +57,10 @@ INSERT INTO device(Etype, Ctype, brand, modelNo, serialNo, imei, time, amount) V
 ("printer", "打印机", "HP", "LassrJet pro P1108", "VNF4620580", NULL, 20210930, 1),
 ("printer", "打印机", "HP", "LassrJet pro P1108", "VNFPP31661", NULL, 20210930, 1),
 ("cable", "线材", NULL, "HDMI", NULL, NULL, 20210930, 13),
-("cable", "线材", NULL, "VGA", NULL, NULL, 20210930, 15),
-("cable", "线材", NULL, "电源线", NULL, NULL, 20210930, 1),
+("cable", "线材", NULL, "VGA", NULL, NULL, 20210930, 9),
+("cable", "线材", NULL, "电源线", NULL, NULL, 20210930, 19),
+("cable", "线材", NULL, "typeA->typeB", NULL, NULL, 20210930, 2),
+("cable", "线材", NULL, "typeA->typeA", NULL, NULL, 20210930, 1),
+("transport", "转接器", NULL, "VGA->HDMI", NULL, NULL, 20210930, 3),
 ("power strip", "插线板", NULL, "插线板", NULL, NULL, 20210930, 1);
 

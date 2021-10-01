@@ -1,7 +1,7 @@
 import configparser
 import os
 
-from DK.settings import BASE_DIR
+from ACMSignInSystem.settings import BASE_DIR
 
 MYSQL = "mysql"
 MYSQL_INI = os.path.join(BASE_DIR, "main/Config/MySQL.ini")
