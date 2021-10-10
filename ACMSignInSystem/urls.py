@@ -30,6 +30,7 @@ urlpatterns = [
     path("sign-in-out/", getPages.redirectToIndex),
 
     # API
+
     path("api/checkusername/", api.checkUsername),
     path("api/getemailcode/", api.getEmailCode),
     path("api/register/", api.register),
