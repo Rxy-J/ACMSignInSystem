@@ -396,8 +396,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
 
             # 如果训练超时
             if timeLength > MAX_TRAINNING_TIME:
-                record.setValid(False)
-                record.setIsRecord(False)
+                record.setStatus(1)
                 status = "error"
                 msg = "单次训练时间超过7个小时，不计入总训练时间"
                 data = {}
@@ -405,8 +404,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
             # 如果训练未超时
             else:
                 user.setAllTrainningTime(str(eval(user.getAllTrainningTime()) + eval(record.getTimeLength())))
-                record.setValid(True)
-                record.setIsRecord(True)
+                record.setStatus(3)
 
                 status = "success"
                 msg = "签退成功"
@@ -421,8 +419,8 @@ def signIn(request: HttpRequest) -> JsonResponse:
             user.setIsTrainning(True)
 
             newRecord = TrainningRecord(username=user.getUsername(), startTime=datetime.now())
-            id = DAOForTrainRecord.addTrainRecord(newRecord)
-            user.setCurrRecordId(str(id))
+            tid = DAOForTrainRecord.addTrainRecord(newRecord)
+            user.setCurrRecordId(tid)
 
             status = "success"
             msg = "签到成功"

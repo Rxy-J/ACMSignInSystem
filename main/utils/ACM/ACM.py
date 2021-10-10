@@ -1,6 +1,5 @@
 from datetime import datetime
 
-
 # ACM基地用户
 from typing import Optional
 
@@ -15,7 +14,7 @@ class ACMUser:
                  joinTime: datetime = None,
                  allTrainningTime: int = 0,
                  isTrainning: bool = False,
-                 currRecordId: str = None,
+                 currRecordId: int = None,
                  admin: bool = False,
                  email: bool = None) -> None:
 
@@ -69,7 +68,7 @@ class ACMUser:
     def getIsTrainning(self) -> bool:
         return self.__isTrainning
 
-    def getCurrRecordId(self) -> str:
+    def getCurrRecordId(self) -> int:
         return self.__currRecordId
 
     def getAdmin(self) -> bool:
@@ -85,7 +84,7 @@ class ACMUser:
     def setIsTrainning(self, isTrainning: bool) -> None:
         self.__isTrainning = isTrainning
 
-    def setCurrRecordId(self, currRecordId: str) -> None:
+    def setCurrRecordId(self, currRecordId: int) -> None:
         self.__currRecordId = currRecordId
 
     def setAllTrainningTime(self, allTrainningTime: int) -> None:
@@ -112,17 +111,17 @@ class ACMUser:
 
     def __repr__(self):
         return "username=%s, passhash=%s, name=%s, department=%s, major=%s, joinTime=%s, allTrainningTime=%s, isTrainning=%s, currRecordId=%s, admin=%s, email=%s" % (
-        self.__username,
-        self.__passhash,
-        self.__name,
-        self.__department,
-        self.__major,
-        self.__joinTime,
-        self.__allTrainningTime,
-        self.__isTrainning,
-        self.__currRecordId,
-        self.__admin,
-        self.__email)
+            self.__username,
+            self.__passhash,
+            self.__name,
+            self.__department,
+            self.__major,
+            self.__joinTime,
+            self.__allTrainningTime,
+            self.__isTrainning,
+            self.__currRecordId,
+            self.__admin,
+            self.__email)
 
     def __str__(self):
         return self.__repr__()
@@ -134,16 +133,14 @@ class TrainningRecord():
                  username: str,
                  startTime: datetime,
                  endTime: datetime = None,
-                 valid: bool = False,
-                 isRecord: bool = False,
+                 status: int = 0,
                  timeLength: int = 0,
-                 id: int = None) -> None:
-        self.__id = id  # 记录id
+                 tid: int = None) -> None:
+        self.__id = tid  # 记录id
         self.__username = username  # 用户名
         self.__startTime = startTime  # 训练开始时间
         self.__endTime = endTime  # 训练结束时间
-        self.__valid = valid if type(isRecord) == bool else self.parserBool(valid)  # 是否有效
-        self.__isRecord = isRecord if type(isRecord) == bool else self.parserBool(isRecord)  # 是否被记录
+        self.__status = status  # 状态码
         self.__timeLength = timeLength  # 本次训练时长
 
     def getId(self) -> int:
@@ -158,11 +155,8 @@ class TrainningRecord():
     def getEndTime(self) -> datetime:
         return self.__endTime
 
-    def getValid(self) -> bool:
-        return self.__valid
-
-    def getIsRecord(self) -> bool:
-        return self.__isRecord
+    def getStatus(self) -> int:
+        return self.__status
 
     def getTimeLength(self) -> int:
         return self.__timeLength
@@ -193,16 +187,13 @@ class TrainningRecord():
         return t_string
 
     def getAll(self) -> tuple:
-        return self.__username, self.__startTime, self.__endTime, self.__valid, self.__isRecord, self.__timeLength
+        return self.__username, self.__startTime, self.__endTime, self.__status, self.__timeLength
 
     def setEndTime(self, endTime: datetime) -> None:
         self.__endTime = endTime
 
-    def setValid(self, valid: bool) -> None:
-        self.__valid = valid
-
-    def setIsRecord(self, isRecord: bool) -> None:
-        self.__isRecord = isRecord
+    def setStatus(self, status: int) -> None:
+        self.__status = status
 
     def setTimeLength(self, timeLength: str) -> None:
         self.__timeLength = timeLength
@@ -214,29 +205,26 @@ class TrainningRecord():
             return False
 
     def getDict(self) -> dict:
-        print(self.getStartTime())
-        print(self.getEndTime())
         return {
             "id": self.getId(),
             "username": self.getUsername(),
             "startTime": self.getStartTime().strftime("%Y.%m.%d %H:%M:%S"),
-            "endTime": self.getEndTime().strftime("%Y.%m.%d %H:%M:%S"),
-            "valid": self.getValid(),
-            "isRecord": self.getIsRecord(),
+            "endTime": self.getEndTime().strftime("%Y.%m.%d %H:%M:%S") if self.getEndTime() else self.getEndTime(),
+            "status": self.getStatus(),
             "timeLength": self.getFormatedTimeLength()
         }
 
     def getAll(self) -> tuple:
-        return (self.__id, self.__username, self.__startTime, self.__endTime, self.__valid, self.__isRecord, self.__timeLength)
+        return (
+            self.__id, self.__username, self.__startTime, self.__endTime, self.__status, self.__timeLength)
 
     def __repr__(self):
-        return "id=%s, username=%s, startTime=%s, endTime=%s, valid=%s, isRecord=%s, timeLength=%s" % (self.__id,
-                                                                                                       self.__username,
-                                                                                                       self.__startTime,
-                                                                                                       self.__endTime,
-                                                                                                       self.__valid,
-                                                                                                       self.__isRecord,
-                                                                                                       self.__timeLength)
+        return "id=%s, username=%s, startTime=%s, endTime=%s, status=%s, timeLength=%s" % (self.__id,
+                                                                                           self.__username,
+                                                                                           self.__startTime,
+                                                                                           self.__endTime,
+                                                                                           self.__status,
+                                                                                           self.__timeLength)
 
     def __str__(self):
         return self.__repr__()

@@ -18,23 +18,12 @@ def addTrainRecord(record: TrainningRecord) -> int:
         db = DBUtils.getConnection()  # 数据库连接
         cursor = db.cursor()  # 游标
 
-        sql = "insert into trainningrecord(username, startTime, endTime, valid, isRecord, timeLength) values (%s, %s, %s, %s, %s, %s)"
-
-        if record.getValid():
-            valid = "Y"
-        else:
-            valid = "N"
-
-        if record.getIsRecord():
-            isRecord = "Y"
-        else:
-            isRecord = "N"
+        sql = "insert into trainningrecord(username, startTime, endTime, status, timeLength) values (%s, %s, %s, %s, %s)"
 
         cursor.execute(sql, (record.getUsername(),
                              record.getStartTime(),
                              record.getEndTime(),
-                             valid,
-                             isRecord,
+                             record.getStatus(),
                              record.getTimeLength()))
         db.commit()
         return cursor.lastrowid
@@ -42,11 +31,12 @@ def addTrainRecord(record: TrainningRecord) -> int:
         db.rollback()
         raise DbError(str(e))
     finally:
-        DBUtils.closeConnection(db)
+        if db is not None:
+            DBUtils.closeConnection(db)
 
 
 # 根据记录id删除记录
-def deleteTrainRecordById(id: int) -> bool:
+def deleteTrainRecordById(tid: int) -> bool:
     try:
         db = None
         db = DBUtils.getConnection()  # 数据库连接
@@ -54,13 +44,14 @@ def deleteTrainRecordById(id: int) -> bool:
 
         sql = "delete from trainningrecord where id=%s"
 
-        cursor.execute(sql, (id,))
+        cursor.execute(sql, (tid,))
         db.commit()
     except Exception as e:
         db.rollback()
         raise DbError(str(e))
     finally:
-        DBUtils.closeConnection(db)
+        if db is not None:
+            DBUtils.closeConnection(db)
 
 
 # 根据记录id更新记录信息
@@ -70,41 +61,31 @@ def updateRecordById(trainningRecord: TrainningRecord):
         db = DBUtils.getConnection()
         cursor = db.cursor()
 
-        sql = "update trainningrecord set endTime=%s, valid=%s, isRecord=%s, timeLength=%s where id=%s;"
-
-        if trainningRecord.getValid():
-            status = "Y"
-        else:
-            status = "N"
-
-        if trainningRecord.getIsRecord():
-            isRecord = "Y"
-        else:
-            isRecord = "N"
+        sql = "update trainningrecord set endTime=%s, status=%s, timeLength=%s where id=%s;"
 
         cursor.execute(sql, (trainningRecord.getEndTime(),
-                             status,
-                             isRecord,
+                             trainningRecord.getStatus(),
                              trainningRecord.getTimeLength(),
-                             trainningRecord.geti))
+                             trainningRecord.getId()))
 
     except Exception as e:
         db.rollback()
         raise DbError(str(e))
     finally:
-        DBUtils.closeConnection(db)
+        if db is not None:
+            DBUtils.closeConnection(db)
 
 
 # 根据id获取训练记录
-def getTrainRecordById(id: int) -> TrainningRecord:
+def getTrainRecordById(tid: int) -> TrainningRecord:
     try:
         db = None
         db = DBUtils.getConnection()
         cursor = db.cursor()
 
-        sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord where id=%s order by id;"
+        sql = "select username, startTime, endTime, status, timeLength, id from trainningrecord where id=%s order by id;"
 
-        cursor.execute(sql, (id,))
+        cursor.execute(sql, (tid,))
 
         unformatedRecord = cursor.fetchone()
         if unformatedRecord != None:
@@ -114,7 +95,8 @@ def getTrainRecordById(id: int) -> TrainningRecord:
     except Exception as e:
         raise DbError(str(e))
     finally:
-        DBUtils.closeConnection(db)
+        if db is not None:
+            DBUtils.closeConnection(db)
 
 
 # 根据用户名查询训练记录
@@ -124,7 +106,7 @@ def getTrainRecordByUsername(username: str, suffix: str = "") -> list:
         db = DBUtils.getConnection()
         cursor = db.cursor()
 
-        sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord where username=%s {} order by id;".format(
+        sql = "select username, startTime, endTime, status, timeLength, id from trainningrecord where username=%s {} order by id;".format(
             suffix)
 
         cursor.execute(sql, (username,))
@@ -138,7 +120,8 @@ def getTrainRecordByUsername(username: str, suffix: str = "") -> list:
     except Exception as e:
         raise DbError(str(e))
     finally:
-        DBUtils.closeConnection(db)
+        if db is not None:
+            DBUtils.closeConnection(db)
 
 
 # 获取全部训练记录
@@ -148,7 +131,7 @@ def getAllTrainRecords() -> list:
         db = DBUtils.getConnection()
         cursor = db.cursor()
 
-        sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord order by id;"
+        sql = "select username, startTime, endTime, status, timeLength, id from trainningrecord order by id;"
 
         cursor.execute(sql)
 
@@ -161,4 +144,5 @@ def getAllTrainRecords() -> list:
     except Exception as e:
         raise DbError(str(e))
     finally:
-        DBUtils.closeConnection(db)
+        if db is not None:
+            DBUtils.closeConnection(db)
