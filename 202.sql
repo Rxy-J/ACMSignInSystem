@@ -23,7 +23,9 @@ INSERT INTO locklist(memberId, name, type, admin) VALUES
 ("009", "朱梓宁", "fingerprint", "N"),
 ("010", "魏辰旭", "fingerprint", "N"),
 ("011", "熊于涛", "fingerprint", "N"),
-("012", "冯旭东", "fingerprint", "N");
+("012", "冯旭东", "fingerprint", "N"),
+("013", "杨永泽", "fingerprint", "N"),
+("014", "刘浩宇", "fingerprint", "N");
 
 
 CREATE TABLE IF NOT EXISTS device(

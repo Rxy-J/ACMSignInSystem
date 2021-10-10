@@ -343,13 +343,13 @@ class DAOForTrainRecord():
             DBUtils.closeConnection(db)
 
     # 根据用户名查询训练记录
-    def getTrainRecordByUsername(username: str) -> list:
+    def getTrainRecordByUsername(username: str, suffix: str="") -> list:
         try:
             db = None
             db = DBUtils.getConnection()
             cursor = db.cursor()
 
-            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord where username=%s order by id;"
+            sql = "select username, startTime, endTime, valid, isRecord, timeLength, id from trainningrecord where username=%s {} order by id;".format(suffix)
 
             cursor.execute(sql, (username,))
 
@@ -377,7 +377,7 @@ class DAOForTrainRecord():
 
             unformatedRecords = cursor.fetchall()
             records = []
-            if unformatedRecords != None:
+            if unformatedRecords is not None:
                 for unformatedRecord in unformatedRecords:
                     records.append(TrainningRecord(*unformatedRecord))
             return records
