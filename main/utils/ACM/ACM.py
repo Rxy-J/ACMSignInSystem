@@ -226,7 +226,7 @@ class TrainningRecord():
             "timeLength": self.getFormatedTimeLength()
         }
 
-    def getAll(self) -> tuple[Optional[int], str, datetime, Optional[datetime], bool, bool, int]:
+    def getAll(self) -> tuple:
         return (self.__id, self.__username, self.__startTime, self.__endTime, self.__valid, self.__isRecord, self.__timeLength)
 
     def __repr__(self):
