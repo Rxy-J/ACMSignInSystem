@@ -197,7 +197,7 @@ def register(request: HttpRequest) -> JsonResponse:
             # raise Exception("邮箱验证码出错")
 
         # 管理员验证码验证
-        if admin:
+        if admin == "true":
             admin = True
             if not (adminVerify == static.ADMIN_CODE.getCurrCode() or adminVerify == static.ADMIN_CODE.getPreCode()):
                 raise Exception("管理员验证码错误")
