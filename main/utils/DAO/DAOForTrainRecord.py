@@ -67,7 +67,7 @@ def updateRecordById(trainningRecord: TrainningRecord):
                              str(trainningRecord.getStatus()),
                              trainningRecord.getTimeLength(),
                              trainningRecord.getId()))
-
+        db.commit()
     except Exception as e:
         db.rollback()
         raise Exception(str(e))

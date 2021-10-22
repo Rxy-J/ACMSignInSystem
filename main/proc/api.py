@@ -73,7 +73,7 @@ def checkFromMP(request: HttpRequest) -> bool:
 
 
 def checkFromAndroid(request: HttpRequest) -> bool:
-    ARegex = "Android"
+    ARegex = "android"
     ua = request.headers["User-Agent"]
     if ua.find(ARegex) == -1:
         return False
@@ -272,7 +272,7 @@ def login(request: HttpRequest) -> JsonResponse:
         if user.getAdmin():
             request.session["admin"] = True
 
-        if checkFromAndroid():
+        if checkFromAndroid(request):
             if request.session["admin"]:
                 request.session.set_expiry(DEFAULT_ADMIN_EXPRIE_TIME_MP)
             else:
@@ -282,7 +282,8 @@ def login(request: HttpRequest) -> JsonResponse:
                 request.session.set_expiry(DEFAULT_ADMIN_EXPRIE_TIME_BROWSER)
             else:
                 request.session.set_expiry(DEFAULT_USER_EXPRIE_TIME_BROWSER)
-
+        for i in request.headers:
+            print(i)
         request.session["isLogin"] = True
         print(request.headers.get("User-Agent"))
 
@@ -405,7 +406,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
             record = DAOForTrainRecord.getTrainRecordById(user.getCurrRecordId())
             record.setEndTime(datetime.now())
             timeLength = record.getEndTime() - record.getStartTime()
-            record.setTimeLength = str(round(timeLength.total_seconds()))
+            record.setTimeLength(round(timeLength.total_seconds()))
 
             # 如果训练超时
             if timeLength > MAX_TRAINNING_TIME:
@@ -542,7 +543,7 @@ def getSpecificRecord(request: HttpRequest) -> JsonResponse:
         if record is None:
             response["msg"] = "empty"
             response["data"] = {
-                "record": {}
+                "record": None
             }
         elif record.getUsername() != request.session.get("username"):
             raise Exception("非本人训练记录，请检查id")

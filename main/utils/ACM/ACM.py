@@ -195,7 +195,7 @@ class TrainningRecord():
     def setStatus(self, status: int) -> None:
         self.__status = status
 
-    def setTimeLength(self, timeLength: str) -> None:
+    def setTimeLength(self, timeLength: int) -> None:
         self.__timeLength = timeLength
 
     def parserBool(self, source: str) -> bool:
