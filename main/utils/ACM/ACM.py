@@ -14,7 +14,7 @@ class ACMUser:
                  joinTime: datetime = None,
                  allTrainningTime: int = 0,
                  isTrainning: bool = False,
-                 currRecordId: int = None,
+                 currRecordId: int = 0,
                  admin: bool = False,
                  email: bool = None) -> None:
 

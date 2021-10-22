@@ -66,3 +66,53 @@ INSERT INTO device(Etype, Ctype, brand, modelNo, serialNo, imei, time, amount) V
 ("transport", "转接器", NULL, "VGA->HDMI", NULL, NULL, 20210930, 3),
 ("power strip", "插线板", NULL, "插线板", NULL, NULL, 20210930, 1);
 
+CREATE TABLE users(
+`uid` INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+`username` VARCHAR(40) NOT NULL, UNIQUE,
+`studentid` VARCHAR(40), UNIQUE,
+`nickname` VARCHAR(64),
+`name` VARCHAR(64),
+`passhash` VARCHAR(32) NOT NULL,
+`secretkey` VARCHAR(32) NOT NULL UNIQUE,
+`status` ENUM("unconfirmed", "nomral", "banned") NOT NULL DEFAULT "pending",
+`bannedtype` TEXT,
+`added` DATETIME NOT NULL DEFAULT "1970-01-01 00:00:00",
+`last_login` DATETIME NOT NULL DEFAULT "1970-01-01 00:00:00",
+`last_pm` DATETIME NOT NULL DEFAULT "1970-01-01 00:00:00",
+`last_comment` DATETIME NOT NULL DEFAULT "1970-01-01 00:00:00",
+`info` TEXT,
+`acceptpm` ENUM("yes", "no") DEFAULT "yes",
+`ip` VARCHAR(64) NOT NULL DEFAULT "",
+`ipv6` VARCHAR(64) DEFAULT NULL,
+`location` VARCHAR(255) DEFAULT NULL,
+`user_type` TINYINT(3) UNSIGNED NOT NULL DEFAULT "0",
+`avatar` VARCHAR(255) DEFAULT NULL,
+`email` VARCHAR(128) DEFAULT NULL,
+`joined competitions` VARCHAR(1000), DEFAULT NULL,
+`joined class` VARCHAR(1000), DEFAULT NULL,
+``,
+) ENGINE=InnoDB CAHRSET=utf8mb4;
+
+CREATE TABLE competitions(
+`id` INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+`competition_name` VARCHAR(255) NOT NULL,
+`description` TEXT NOT NULL,
+`type` ENUM("competition", "class"),
+`sponsor_id` INT NOT NULL,
+`admin` VARCHAR(500) DEFAULT NULL ,
+`questions` VARCHAR(1000) DEFAULT NULL,
+`partial_info` ENUM("yes", "no") DEFAULT "yes",
+`startTime` DATETIME DEFAULT "1970-01-01 00:00:00",
+`endTime` DATETIME DEFAULT "1970-01-01 00:00:00"
+) ENGINE=InnoDB CAHRSET=utf8mb4;
+
+CREATE TABLE records(
+`id` INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+`competition_id` INT DEFAULT NULL,
+`user_id` INT NOT NULL,
+`question_id` INT NOT NULL,
+`status` ENUM("AC", "WA", "RE", "CE", "TLE", "MLE", "UKE", "PENDING") DEFAULT "PENDING",
+`pass_point` VARCHAR(500) DEFAULT NULL,
+`added` DATETIME DEFAULT "1970-01-01 00:00:00",
+`finished` DATETIME DEFAULT "1970-01-01 00:00:00"
+) ENGINE=InnoDB CAHRSET=utf8mb4;

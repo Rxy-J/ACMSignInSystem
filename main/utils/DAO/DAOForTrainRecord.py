@@ -9,7 +9,8 @@
 
 from main.utils.DAO import DBUtils
 from main.utils.ACM.ACM import TrainningRecord
-from main.Exception.Error import  DbError
+from main.Exception.Error import DbError
+
 
 # 添加签到记录
 def addTrainRecord(record: TrainningRecord) -> int:
@@ -18,7 +19,7 @@ def addTrainRecord(record: TrainningRecord) -> int:
         db = DBUtils.getConnection()  # 数据库连接
         cursor = db.cursor()  # 游标
 
-        sql = "insert into trainningrecord(username, startTime, endTime, status, timeLength) values (%s, %s, %s, %s, %s)"
+        sql = "insert into trainningrecord(username, startTime, endTime, status, timeLength) values (%s, %s, %s, %s, %s);"
 
         cursor.execute(sql, (record.getUsername(),
                              record.getStartTime(),

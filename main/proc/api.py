@@ -138,7 +138,7 @@ def getEmailCode(request: HttpRequest) -> JsonResponse:
         username = request.POST.get("username")
         email = request.POST.get("email")
 
-        if username == None:
+        if username is None:
             pass
             # raise Exception("请输入用户名")
 
@@ -206,6 +206,7 @@ def register(request: HttpRequest) -> JsonResponse:
 
         user = ACMUser(username=username, passhash=getMD5(password), name=name, department=department, major=major,
                        joinTime=joinTime, admin=admin, email=email)
+        print(user)
         userId = DAOForUser.addUser(user)
 
         response["status"] = "success"
@@ -242,10 +243,10 @@ def login(request: HttpRequest) -> JsonResponse:
         password = request.POST.get("password")
         source = request.POST.get("from")
 
-        if username == None or password == None:
+        if username is None or password is None:
             raise Exception("请检查账号或密码")
 
-        if request.session.session_key == None:
+        if request.session.session_key is None:
             request.session.create()
         request.session["username"] = username
         request.session["isLogin"] = False
@@ -253,7 +254,7 @@ def login(request: HttpRequest) -> JsonResponse:
 
         user = DAOForUser.getUserByUsername(username)
 
-        if user == None:
+        if user is None:
             raise Exception("用户不存在")
 
         if getMD5(password) != user.getPasshash():
@@ -379,12 +380,13 @@ def signIn(request: HttpRequest) -> JsonResponse:
         gap = cTime - datetime.strptime(vTime, "%Y%m%d%H%M%S")
 
         user = DAOForUser.getUserByUsername(request.session.get("username"))
+        print(user)
 
-        if user == None:
+        if user is None:
             raise Exception("用户不存在")
         if vToken != cToken or gap > MAX_VERIFY_TIME_GAP:
             raise Exception("打卡信息校验失败")
-
+        print(user.getIsTrainning())
         # 如果在训练
         if user.getIsTrainning():
             user.setIsTrainning(False)
@@ -419,6 +421,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
             user.setIsTrainning(True)
 
             newRecord = TrainningRecord(username=user.getUsername(), startTime=datetime.now())
+            print(newRecord)
             tid = DAOForTrainRecord.addTrainRecord(newRecord)
             user.setCurrRecordId(tid)
 
@@ -455,7 +458,7 @@ def getUserInfo(request: HttpRequest) -> JsonResponse:
 
         username = request.session.get("username")
         user = DAOForUser.getUserByUsername(username)
-        if user != None:
+        if user is not None:
             response["status"] = "success"
             response["msg"] = "ok"
             response["data"] = user.getDict()
@@ -512,7 +515,7 @@ def getRecord(request: HttpRequest) -> JsonResponse:
 
 # 获取指定训练记录
 # POST
-def getspecificrecord(request: HttpRequest) -> JsonResponse:
+def getSpecificRecord(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
     response["data"] = {
         "records": []
@@ -538,7 +541,6 @@ def getspecificrecord(request: HttpRequest) -> JsonResponse:
                 "record": record.getDict()
             }
         response["status"] = "success"
-
 
     except Exception as e:
         response["status"] = "error"

@@ -39,7 +39,7 @@ urlpatterns = [
     path("api/signin/", api.signIn),
     path("api/getcode/", api.getCode),
     path("api/getuserinfo/", api.getUserInfo),
-    path("api/getspecificrecord/", api.getspecificrecord),
+    path("api/getspecificrecord/", api.getSpecificRecord),
     path("api/getrecord/", api.getRecord),
     path("api/getall/", api.getAll),
     # path("api/updatepwd/", api.updatePassword)
