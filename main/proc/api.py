@@ -72,6 +72,15 @@ def checkFromMP(request: HttpRequest) -> bool:
         return True
 
 
+def checkFromAndroid(request: HttpRequest) -> bool:
+    ARegex = "Android"
+    ua = request.headers["User-Agent"]
+    if ua.find(ARegex) == -1:
+        return False
+    else:
+        return True
+
+
 # 清除过期session
 def clearSession(request: HttpRequest):
     """
@@ -241,7 +250,7 @@ def login(request: HttpRequest) -> JsonResponse:
 
         username = request.POST.get("username")
         password = request.POST.get("password")
-        source = request.POST.get("from")
+
 
         if username is None or password is None:
             raise Exception("请检查账号或密码")
@@ -263,7 +272,7 @@ def login(request: HttpRequest) -> JsonResponse:
         if user.getAdmin():
             request.session["admin"] = True
 
-        if source == "MP":
+        if checkFromAndroid():
             if request.session["admin"]:
                 request.session.set_expiry(DEFAULT_ADMIN_EXPRIE_TIME_MP)
             else:
@@ -275,6 +284,7 @@ def login(request: HttpRequest) -> JsonResponse:
                 request.session.set_expiry(DEFAULT_USER_EXPRIE_TIME_BROWSER)
 
         request.session["isLogin"] = True
+        print(request.headers.get("User-Agent"))
 
         response["status"] = "success"
         response["msg"] = "登录成功"
@@ -282,6 +292,7 @@ def login(request: HttpRequest) -> JsonResponse:
             "username": user.getUsername(),
             "admin": user.getAdmin(),
             "sessionId": request.session.session_key,
+            "ua": request.headers.get("User-Agent")
         }
 
         # return HttpResponseRedirect("../")
@@ -405,7 +416,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
 
             # 如果训练未超时
             else:
-                user.setAllTrainningTime(str(eval(user.getAllTrainningTime()) + eval(record.getTimeLength())))
+                user.setAllTrainningTime(user.getAllTrainningTime() + record.getTimeLength())
                 record.setStatus(3)
 
                 status = "success"
@@ -428,7 +439,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
             status = "success"
             msg = "签到成功"
             data = {
-                "startTime": newRecord.getStartTime().strptime("%Y%m%d%H%M%S")
+                "startTime": newRecord.getStartTime().strftime("%Y%m%d%H%M%S")
             }
 
         DAOForUser.updateUserInfoByUsername(user)
