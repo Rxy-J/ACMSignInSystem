@@ -9,7 +9,6 @@
 
 from main.utils.DAO import DBUtils
 from main.utils.ACM.ACM import TrainningRecord
-from main.Exception.Error import DbError
 
 
 # 添加签到记录
@@ -24,13 +23,13 @@ def addTrainRecord(record: TrainningRecord) -> int:
         cursor.execute(sql, (record.getUsername(),
                              record.getStartTime(),
                              record.getEndTime(),
-                             record.getStatus(),
+                             str(record.getStatus()),
                              record.getTimeLength()))
         db.commit()
         return cursor.lastrowid
     except Exception as e:
         db.rollback()
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         if db is not None:
             DBUtils.closeConnection(db)
@@ -49,7 +48,7 @@ def deleteTrainRecordById(tid: int) -> bool:
         db.commit()
     except Exception as e:
         db.rollback()
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         if db is not None:
             DBUtils.closeConnection(db)
@@ -65,13 +64,13 @@ def updateRecordById(trainningRecord: TrainningRecord):
         sql = "update trainningrecord set endTime=%s, status=%s, timeLength=%s where id=%s;"
 
         cursor.execute(sql, (trainningRecord.getEndTime(),
-                             trainningRecord.getStatus(),
+                             str(trainningRecord.getStatus()),
                              trainningRecord.getTimeLength(),
                              trainningRecord.getId()))
 
     except Exception as e:
         db.rollback()
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         if db is not None:
             DBUtils.closeConnection(db)
@@ -94,7 +93,7 @@ def getTrainRecordById(tid: int) -> TrainningRecord:
         else:
             return None
     except Exception as e:
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         if db is not None:
             DBUtils.closeConnection(db)
@@ -119,7 +118,7 @@ def getTrainRecordByUsername(username: str, suffix: str = "") -> list:
                 records.append(TrainningRecord(*unformatedRecord))
         return records
     except Exception as e:
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         if db is not None:
             DBUtils.closeConnection(db)
@@ -143,7 +142,7 @@ def getAllTrainRecords() -> list:
                 records.append(TrainningRecord(*unformatedRecord))
         return records
     except Exception as e:
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         if db is not None:
             DBUtils.closeConnection(db)

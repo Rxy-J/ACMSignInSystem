@@ -9,7 +9,6 @@
 
 from main.utils.DAO import DBUtils
 from main.utils.ACM.ACM import ACMUser
-from main.Exception.Error import  DbError
 
 # 添加用户，以ACMUser为单位进行添加
 def addUser(user: ACMUser) -> int:
@@ -45,7 +44,7 @@ def addUser(user: ACMUser) -> int:
         return cursor.lastrowid
     except Exception as e:
         db.rollback()
-        raise DbError(str(e) + str(e.__traceback__.tb_lineno))
+        raise Exception(str(e) + str(e.__traceback__.tb_lineno))
     finally:
         DBUtils.closeConnection(db)
 
@@ -63,7 +62,7 @@ def deleteUserByUsername(username: str) -> bool:
         db.commit()
     except Exception as e:
         db.rollback()
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         DBUtils.closeConnection(db)
 
@@ -92,7 +91,7 @@ def updateUserInfoByUsername(user: ACMUser):
         db.commit()
     except Exception as e:
         db.rollback()
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         DBUtils.closeConnection(db)
 
@@ -110,7 +109,7 @@ def updatePwdByUsername(username: str, passhash: str):
         db.commit()
     except Exception as e:
         db.rollback()
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         DBUtils.closeConnection(db)
 
@@ -133,7 +132,7 @@ def updatePrivByUsername(username: str, admin: bool):
         db.commit()
     except Exception as e:
         db.rollback()
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         DBUtils.closeConnection(db)
 
@@ -159,7 +158,7 @@ def getUserByUsername(username: str):
         else:
             return None
     except Exception as e:
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         DBUtils.closeConnection(db)
 
@@ -188,7 +187,7 @@ def getUsersByStatus(isTrainning: bool) -> list:
                 users.append(ACMUser(*unformatedUser))
         return users
     except Exception as e:
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         DBUtils.closeConnection(db)
 
@@ -217,7 +216,7 @@ def getUsersByPriv(admin: bool) -> list:
                 users.append(ACMUser(*unformatedUser))
         return users
     except Exception as e:
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         DBUtils.closeConnection(db)
 
@@ -241,6 +240,6 @@ def getAll():
 
         return users
     except Exception as e:
-        raise DbError(str(e))
+        raise Exception(str(e))
     finally:
         DBUtils.closeConnection(db)
