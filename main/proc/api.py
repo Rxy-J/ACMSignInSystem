@@ -29,7 +29,7 @@ from main.Config.GlobalConfig import (DEFAULT_RESPONSE_TEMPLATE,
                                       DEFAULT_ADMIN_EXPRIE_TIME_MP,
                                       DEFAULT_USER_EXPRIE_TIME_MP)
 from main.utils.ACM.ACM import ACMUser, TrainningRecord
-from main.utils.DAO import DAOForTrainRecord, DAOForUser
+from main.utils.DAO import DAOForTrainRecord, DAOForUser, DAOForOP
 from main.utils.Mail import SendMail
 from main.utils.MD5 import getMD5
 from main.utils.QRCode import getQRCode
@@ -49,6 +49,7 @@ def checkSession(request: HttpRequest) -> bool:
         return False
 
 
+# 检查用户是否为管理员
 def checkAdmin(request: HttpRequest) -> bool:
     """
     管理员检查
@@ -72,6 +73,7 @@ def checkFromMP(request: HttpRequest) -> bool:
         return True
 
 
+# 检查来源是否为Android
 def checkFromAndroid(request: HttpRequest) -> bool:
     ARegex = "android"
     ua = request.headers["User-Agent"]
@@ -251,7 +253,6 @@ def login(request: HttpRequest) -> JsonResponse:
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-
         if username is None or password is None:
             raise Exception("请检查账号或密码")
 
@@ -309,7 +310,7 @@ def login(request: HttpRequest) -> JsonResponse:
 
 
 # 注销
-# GET
+# POST
 def logout(request: HttpRequest) -> JsonResponse:
     """
     注销
@@ -335,7 +336,7 @@ def logout(request: HttpRequest) -> JsonResponse:
 
 
 # 获取签到二维码
-# GET
+# POST
 def getCode(request: HttpRequest) -> HttpResponse:
     """
     获取签到二维码
@@ -373,6 +374,7 @@ def getCode(request: HttpRequest) -> HttpResponse:
 
 # 签到/签退
 # POST
+
 def signIn(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
     try:
@@ -398,7 +400,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
             raise Exception("用户不存在")
         if vToken != cToken or gap > MAX_VERIFY_TIME_GAP:
             raise Exception("打卡信息校验失败")
-        print(user.getIsTrainning())
+
         # 如果在训练
         if user.getIsTrainning():
             user.setIsTrainning(False)
@@ -426,24 +428,22 @@ def signIn(request: HttpRequest) -> JsonResponse:
                     "trainningTime": timeLength.total_seconds(),
                 }
 
-            DAOForTrainRecord.updateRecordById(record)
+            # DAOForTrainRecord.updateRecordById(record)
 
         # 如果未在训练
         else:
             user.setIsTrainning(True)
 
-            newRecord = TrainningRecord(username=user.getUsername(), startTime=datetime.now())
-            print(newRecord)
-            tid = DAOForTrainRecord.addTrainRecord(newRecord)
-            user.setCurrRecordId(tid)
+            record = TrainningRecord(username=user.getUsername(), startTime=datetime.now())
 
             status = "success"
             msg = "签到成功"
             data = {
-                "startTime": newRecord.getStartTime().strftime("%Y%m%d%H%M%S")
+                "startTime": datetime.now().strftime("%Y%m%d%H%M%S")
             }
 
-        DAOForUser.updateUserInfoByUsername(user)
+        # DAOForUser.updateUserInfoByUsername(user)
+        DAOForOP.updateSignStatus(user, record)
 
         response["status"] = status
         response["msg"] = msg
@@ -458,7 +458,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
 
 
 # 获取用户信息
-# GET
+# POST
 def getUserInfo(request: HttpRequest) -> JsonResponse:
     response = DEFAULT_RESPONSE_TEMPLATE
 
@@ -585,6 +585,85 @@ def getAll(request: HttpRequest) -> JsonResponse:
         response["data"] = {
             "users": [i.getDict() for i in users]
         }
+    except Exception as e:
+        response["status"] = "error"
+        response["msg"] = str(e)
+        response["data"] = {}
+
+    return JsonResponse(response)
+
+
+# 删除指定记录
+def deleteRecord(request: HttpRequest):
+    response = DEFAULT_RESPONSE_TEMPLATE
+    response["data"] = {
+        "records": []
+    }
+
+    try:
+        clearSession(request)
+        if not checkSession(request):
+            # if checkFromMP(request):
+            raise Exception("尚未登录")
+
+        username = request.session.get("username")
+
+        rid = request.POST.get("rid")
+        record = DAOForTrainRecord.getTrainRecordById(rid)
+        if record.getUsername() != username and (not checkAdmin(request)):
+            raise Exception("非本用户记录！")
+        user = DAOForUser.getUserByUsername(username)
+        user.setAllTrainningTime(user.getAllTrainningTime()-record.getTimeLength())
+        DAOForTrainRecord.deleteTrainRecordById(rid)
+        DAOForUser.updateUserInfoByUsername(user)
+        response["status"] = "success"
+        response["msg"] = "ok"
+        response["data"] = {}
+    except Exception as e:
+        response["status"] = "error"
+        response["msg"] = str(e)
+        response["data"] = {}
+
+    return JsonResponse(response)
+
+
+# api状态检查
+def apiCheck(request: HttpRequest):
+    resp = {
+        "status": "success"
+    }
+    return JsonResponse(resp)
+
+
+# 刷新全体数据
+def flushAll(request: HttpRequest):
+    response = DEFAULT_RESPONSE_TEMPLATE
+    response["data"] = {
+        "records": []
+    }
+
+    try:
+        clearSession(request)
+        if not checkSession(request):
+            raise Exception("尚未登录")
+        if not checkAdmin(request):
+            raise Exception("您不是管理员，无法操作")
+
+        users = DAOForUser.getAll()
+        for user in users:
+            records = DAOForTrainRecord.getTrainRecordByUsername(user.getUsername())
+            tTime = 0
+            for record in records:
+                print(record.getStatus())
+                if record.getStatus() == 3:
+                    tTime += record.getTimeLength()
+            user.setAllTrainningTime(tTime)
+            DAOForUser.updateUserInfoByUsername(user)
+
+        response["status"] = "success"
+        response["msg"] = "ok"
+        response["data"] = {}
+
     except Exception as e:
         response["status"] = "error"
         response["msg"] = str(e)

@@ -128,7 +128,12 @@ class ACMUser:
 
 
 # 训练记录
-class TrainningRecord():
+# status值用于描述该记录状态
+# 0 -> 记录但未完成训练
+# 1 -> 训练已完成但是记录无效
+# 2 -> 训练已完成但尚未被记录
+# 3 -> 训练已完成且已被记录
+class TrainningRecord:
     def __init__(self,
                  username: str,
                  startTime: datetime,
@@ -140,7 +145,7 @@ class TrainningRecord():
         self.__username = username  # 用户名
         self.__startTime = startTime  # 训练开始时间
         self.__endTime = endTime  # 训练结束时间
-        self.__status = status  # 状态码
+        self.__status = status if type(status) == int else eval(status)  # 状态码
         self.__timeLength = timeLength  # 本次训练时长
 
     def getId(self) -> int:

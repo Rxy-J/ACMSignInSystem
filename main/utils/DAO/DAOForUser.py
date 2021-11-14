@@ -16,7 +16,6 @@ def addUser(user: ACMUser) -> int:
         db = None
         db = DBUtils.getConnection()  # 数据库连接
         cursor = db.cursor()  # 游标
-
         sql = "insert into user(username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
 
         if user.getIsTrainning():
