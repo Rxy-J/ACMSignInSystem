@@ -21,12 +21,17 @@ def updateSignStatus(user: ACMUser, record: TrainningRecord):
             rsql = "insert into trainningrecord(username, startTime) values (%s, %s);"
             cursor.execute(rsql, (record.getUsername(), record.getStartTime()))
         else:
-            rsql = "update trainnginrecord set endTime=%s, status=%s, timeLength=%s where id=%s;"
-            cursor.execute(rsql, (record.getEndTime(), record.getStatus(), record.getTimeLength(), record.getId()))
+            rsql = "update trainningrecord set endTime=%s, status=%s, timeLength=%s where id=%s;"
+            cursor.execute(rsql, (record.getEndTime(), str(record.getStatus()), record.getTimeLength(), record.getId()))
 
         if record.getId() is None:
             user.setCurrRecordId(cursor.lastrowid)
-        cursor.execute(usql, (user.getAllTrainningTime(), user.getIsTrainning(), user.getCurrRecordId(), user.getUsername()))
+
+        if user.getIsTrainning():
+            status = "Y"
+        else:
+            status = "N"
+        cursor.execute(usql, (user.getAllTrainningTime(), status, user.getCurrRecordId(), user.getUsername()))
 
         db.commit()
         return user.getCurrRecordId()

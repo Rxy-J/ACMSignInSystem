@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="b7fa2f74-157c-4566-8e4f-56251740885e" name="更改" comment="修复bug">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ACMSignInSystem/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ACMSignInSystem/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ACMSignInSystem/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/ACMSignInSystem/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/proc/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/proc/api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/utils/DAO/DAOForOP.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/utils/DAO/DAOForOP.py" afterDir="false" />
@@ -101,7 +103,7 @@
       <workItem from="1634902116348" duration="5637000" />
       <workItem from="1636767958389" duration="8462000" />
       <workItem from="1636855255500" duration="897000" />
-      <workItem from="1636973378240" duration="1154000" />
+      <workItem from="1636973378240" duration="6963000" />
     </task>
     <task id="LOCAL-00001" summary="修复bug">
       <created>1634902962778</created>

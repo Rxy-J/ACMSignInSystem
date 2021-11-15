@@ -44,5 +44,6 @@ urlpatterns = [
     path("api/getall/", api.getAll),
     # path("api/updatepwd/", api.updatePassword)
     path("api/droprecord/", api.deleteRecord),
-    path("api/flushall/", api.flushAll)
+    path("api/flushall/", api.flushAll),
+    path("invitecode/", api.getInviteCode)
 ]

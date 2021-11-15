@@ -73,6 +73,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ACMSignInSystem.wsgi.application'
 
+BASICAUTH_USERS = {
+    "123": "123"
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

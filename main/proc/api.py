@@ -17,7 +17,6 @@ from django.http.response import (HttpResponse,
 from django.middleware import csrf
 
 from ACMSignInSystem import static  # 加载生成器
-# from main.proc.getPage import getLoginPage
 from main.Config.GlobalConfig import (DEFAULT_RESPONSE_TEMPLATE,
                                       EMAIL_VERIFY_CODE_TIME,
                                       MAX_TRAINNING_TIME,
@@ -670,3 +669,26 @@ def flushAll(request: HttpRequest):
         response["data"] = {}
 
     return JsonResponse(response)
+
+
+def getInviteCode(request: HttpRequest) -> HttpResponse:
+    try:
+        if 'HTTP_AUTHORIZATION' in request.META:
+            info = request.META.get('HTTP_AUTHORIZATION')
+            info = info.split(" ")[-1]
+            username, password = base64.b64decode(info.encode()).decode().split(":")
+            if username:
+                user = DAOForUser.getUserByUsername(username)
+                if user is not None and user.getAdmin() and getMD5(password) == user.getPasshash():
+                    response = HttpResponse(static.ADMIN_CODE.getCurrCode())
+                else:
+                    raise Exception("unauthoized!")
+            else:
+                raise Exception("unauthoized!")
+        else:
+            raise Exception("unauthoized!")
+    except Exception as e:
+        response = HttpResponse(str(e), status=401)
+        response['WWW-Authenticate'] = 'Basic realm="Secure resource"'
+
+    return response
