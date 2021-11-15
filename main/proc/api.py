@@ -361,7 +361,7 @@ def getCode(request: HttpRequest) -> HttpResponse:
             "token": verifyToken,
             "time": time
         }
-
+        print(data)
         imgBytes = getQRCode(str(data))
         return HttpResponse(imgBytes)
     except Exception as e:
@@ -453,7 +453,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
         response["status"] = "error"
         response["msg"] = str(e)
         response["data"] = {}
-
+    print(response)
     return JsonResponse(response)
 
 

@@ -2,22 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b7fa2f74-157c-4566-8e4f-56251740885e" name="更改" comment="修复bug">
-      <change afterPath="$PROJECT_DIR$/.idea/DK.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main/utils/DAO/DAOForOP.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ACMSignInSystem/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/ACMSignInSystem/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/proc/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/proc/api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/proc/getPages.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/proc/getPages.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/utils/ACM/ACM.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/utils/ACM/ACM.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/utils/DAO/DAOForUser.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/utils/DAO/DAOForUser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/utils/DAO/DBUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/utils/DAO/DBUtils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/utils/DAO/DAOForOP.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/utils/DAO/DAOForOP.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,6 +21,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/AppData/Local/JetBrains/PyCharm2021.2/python_stubs/-1586869262/builtins.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProjectId" id="1zWtcI0o8cwH3w7EXAulvT88lNg" />
   <component name="ProjectViewState">
@@ -109,6 +100,8 @@
       <workItem from="1634275754221" duration="1838000" />
       <workItem from="1634902116348" duration="5637000" />
       <workItem from="1636767958389" duration="8462000" />
+      <workItem from="1636855255500" duration="897000" />
+      <workItem from="1636973378240" duration="1154000" />
     </task>
     <task id="LOCAL-00001" summary="修复bug">
       <created>1634902962778</created>
