@@ -14,13 +14,14 @@ def getConnection() -> Connection:
             database=MysqlConfig.MYSQL_DATABASE
         )
     except Exception as e:
-        print(str(e))
+        # print(str(e))
 
         raise DbConnectError
 
 
 def closeConnection(conn: Connection):
     try:
-        conn.close()
+        if conn is not None:
+            conn.close()
     except Exception as e:
         print(str(e))

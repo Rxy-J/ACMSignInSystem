@@ -4,7 +4,7 @@ from django.http.response import HttpResponseRedirect
 
 
 def getIndex(request: HttpRequest) -> render:
-    print(request.path_info)
+    # print(request.path_info)
     return render(request, "index.html")
 
 

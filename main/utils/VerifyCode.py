@@ -56,7 +56,7 @@ class TOTP(threading.Thread):
         while True:
             self.__preCode = self.__currCode
             self.__currCode = self.process()
-            print(self.__currCode)
+            # print(self.__currCode)
             time.sleep(10)
             self.__preCode = None
             time.sleep(20)

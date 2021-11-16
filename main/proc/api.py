@@ -156,7 +156,7 @@ def getEmailCode(request: HttpRequest) -> JsonResponse:
             raise Exception("请输入格式正确的邮箱")
 
         code = static.EMAIL_CODE.getCode()
-        print(code)
+        # print(code)
         validTime = EMAIL_VERIFY_CODE_TIME.total_seconds() % 60
         context = VERIFY_CODE_CONTEXT.format(username, code, validTime)
 
@@ -216,7 +216,7 @@ def register(request: HttpRequest) -> JsonResponse:
 
         user = ACMUser(username=username, passhash=getMD5(password), name=name, department=department, major=major,
                        joinTime=joinTime, admin=admin, email=email)
-        print(user)
+        # print(user)
         userId = DAOForUser.addUser(user)
 
         response["status"] = "success"
@@ -282,10 +282,10 @@ def login(request: HttpRequest) -> JsonResponse:
                 request.session.set_expiry(DEFAULT_ADMIN_EXPRIE_TIME_BROWSER)
             else:
                 request.session.set_expiry(DEFAULT_USER_EXPRIE_TIME_BROWSER)
-        for i in request.headers:
-            print(i)
+        # for i in request.headers:
+        #     print(i)
         request.session["isLogin"] = True
-        print(request.headers.get("User-Agent"))
+        # print(request.headers.get("User-Agent"))
 
         response["status"] = "success"
         response["msg"] = "登录成功"
@@ -360,7 +360,7 @@ def getCode(request: HttpRequest) -> HttpResponse:
             "token": verifyToken,
             "time": time
         }
-        print(data)
+        # print(data)
         imgBytes = getQRCode(str(data))
         return HttpResponse(imgBytes)
     except Exception as e:
@@ -393,7 +393,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
         gap = cTime - datetime.strptime(vTime, "%Y%m%d%H%M%S")
 
         user = DAOForUser.getUserByUsername(request.session.get("username"))
-        print(user)
+        # print(user)
 
         if user is None:
             raise Exception("用户不存在")
@@ -452,7 +452,7 @@ def signIn(request: HttpRequest) -> JsonResponse:
         response["status"] = "error"
         response["msg"] = str(e)
         response["data"] = {}
-    print(response)
+    # print(response)
     return JsonResponse(response)
 
 
@@ -653,7 +653,7 @@ def flushAll(request: HttpRequest):
             records = DAOForTrainRecord.getTrainRecordByUsername(user.getUsername())
             tTime = 0
             for record in records:
-                print(record.getStatus())
+                # print(record.getStatus())
                 if record.getStatus() == 3:
                     tTime += record.getTimeLength()
             user.setAllTrainningTime(tTime)
