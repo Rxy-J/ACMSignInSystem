@@ -511,6 +511,9 @@ def getRecord(request: HttpRequest) -> JsonResponse:
             suffix = ""
         username = request.session.get("username")
         records = DAOForTrainRecord.getTrainRecordByUsername(username, suffix=suffix)
+        for i in records:
+            if i.getStatus() == 0:
+                i.setTimeLength(round((datetime.now()-i.getStartTime()).total_seconds()))
         response["status"] = "success"
         response["msg"] = "ok"
         response["data"] = {
@@ -547,6 +550,8 @@ def getSpecificRecord(request: HttpRequest) -> JsonResponse:
         elif record.getUsername() != request.session.get("username"):
             raise Exception("非本人训练记录，请检查id")
         else:
+            if record.getStatus() == 0:
+                record.setTimeLength(round((datetime.now()-record.getStartTime()).total_seconds()))
             response["msg"] = "ok"
             response["data"] = {
                 "record": record.getDict()
@@ -656,6 +661,10 @@ def flushAll(request: HttpRequest):
                 # print(record.getStatus())
                 if record.getStatus() == 3:
                     tTime += record.getTimeLength()
+                if record.getStatus() == 2:
+                    tTime += record.getTimeLength()
+                    record.setStatus(3)
+                    DAOForTrainRecord.updateRecordById(record)
             user.setAllTrainningTime(tTime)
             DAOForUser.updateUserInfoByUsername(user)
 
