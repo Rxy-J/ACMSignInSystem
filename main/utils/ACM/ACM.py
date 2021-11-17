@@ -1,9 +1,7 @@
 from datetime import datetime
 
+
 # ACM基地用户
-from typing import Optional
-
-
 class ACMUser:
     def __init__(self,
                  username: str,
@@ -129,10 +127,10 @@ class ACMUser:
 
 # 训练记录
 # status值用于描述该记录状态
-# 0 -> 记录但未完成训练
-# 1 -> 训练已完成但是记录无效
-# 2 -> 训练已完成但尚未被记录
-# 3 -> 训练已完成且已被记录
+# 0 -> 尚未完成训练
+# 1 -> 训练已完成，但训练结果无效，且时长未被记录
+# 2 -> 训练已完成，训练结果有效，但时长未被记录
+# 3 -> 训练已完成，训练结果有效，时长已被记录
 class TrainningRecord:
     def __init__(self,
                  username: str,
