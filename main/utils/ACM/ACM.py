@@ -2,6 +2,10 @@ from datetime import datetime
 
 
 # ACM基地用户
+from main.utils.MD5 import getMD5
+from main.utils.salt import genSalt
+
+
 class ACMUser:
     def __init__(self,
                  username: str,
@@ -14,7 +18,8 @@ class ACMUser:
                  isTrainning: bool = False,
                  currRecordId: int = 0,
                  admin: bool = False,
-                 email: bool = None) -> None:
+                 secret: str = None,
+                 email: str = None) -> None:
 
         self.__username = username  # 用户名/学号
         self.__passhash = passhash  # 密码，必须为MD5码
@@ -26,6 +31,7 @@ class ACMUser:
         self.__isTrainning = isTrainning if type(isTrainning) == bool else self.parserBool(isTrainning)  # 当前是否在训练
         self.__currRecordId = currRecordId  # 当前正在进行训练的训练记录id
         self.__admin = admin if type(admin) == bool else self.parserBool(admin)  # 是否为管理员
+        self.__secret = secret
         self.__email = email
 
     def getUsername(self) -> str:
@@ -72,6 +78,9 @@ class ACMUser:
     def getAdmin(self) -> bool:
         return self.__admin
 
+    def getSecret(self) -> str:
+        return self.__secret
+
     def getEmail(self) -> str:
         return self.__email
 
@@ -106,6 +115,15 @@ class ACMUser:
             "email": self.getEmail()
 
         }
+
+    def genPassHash(self, password: str, newSalt: bool=False) -> None:
+        if self.__secret is None or newSalt:
+            self.__secret = genSalt()
+        self.__passhash = getMD5(self.__secret + password + self.__secret)
+
+    def checkPassword(self, password: str) -> bool:
+        passHash = getMD5(self.__secret + password + self.__secret)
+        return passHash == self.__passhash
 
     def __repr__(self):
         return "username=%s, passhash=%s, name=%s, department=%s, major=%s, joinTime=%s, allTrainningTime=%s, isTrainning=%s, currRecordId=%s, admin=%s, email=%s" % (

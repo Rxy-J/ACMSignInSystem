@@ -21,16 +21,17 @@ CREATE TABLE IF NOT EXISTS user(
     isTrainning ENUM("Y", "N") DEFAULT "N",
     currRecordId INT,
     admin ENUM("Y", "N") DEFAULT "N",
+    secret VARCHAR(10),
     email VARCHAR(100)
 );
 
 /*
  * 默认用户插入
  */
-INSERT INTO user(uid, username, passhash, name, allTrainningTime, admin, email) VALUES 
-(1, "admin", "21232f297a57a5a743894a0e4a801fc3", "admin", 0, "Y", "admin@mail.orangej.xyz"),
-(2, "user", "ee11cbb19052e40b07aac0ca060c23ee", "user", 7240, "N", "user@mail.orangej.xyz"),
-(3, "android", "a5ee8cae22abf57d3c4c29f52f32ce9a", "user", 3620, "N", "user@mail.orangej.xyz");
+INSERT INTO user(uid, username, passhash, name, allTrainningTime, admin, secret, email) VALUES
+(1, "admin", "60106b4e3678d2f32d6cc9feececb7dd", "admin", 0, "Y", "123456", "admin@mail.orangej.xyz"),
+(2, "user", "d2d670eea087c985f63afb04e61e13cb", "user", 7240, "N", "123456", "user@mail.orangej.xyz"),
+(3, "android", "38975efa521536a17f33641a7efa9d84", "user", 3620, "N", "123456", "user@mail.orangej.xyz");
 
 /* 
  * 创建训练记录表

@@ -8,10 +8,10 @@ import base64
 import re
 
 from datetime import datetime
+from tkinter import N
 
 from django.http import HttpRequest
 from django.http.response import (HttpResponse,
-                                  HttpResponseRedirect,
                                   HttpResponseNotFound,
                                   JsonResponse)
 from django.middleware import csrf
@@ -214,9 +214,10 @@ def register(request: HttpRequest) -> JsonResponse:
         else:
             admin = False
 
-        user = ACMUser(username=username, passhash=getMD5(password), name=name, department=department, major=major,
+        user = ACMUser(username=username, name=name, department=department, major=major,
                        joinTime=joinTime, admin=admin, email=email)
         # print(user)
+        user.genPassHash(password)
         userId = DAOForUser.addUser(user)
 
         response["status"] = "success"
@@ -266,7 +267,7 @@ def login(request: HttpRequest) -> JsonResponse:
         if user is None:
             raise Exception("用户不存在")
 
-        if getMD5(password) != user.getPasshash():
+        if not user.checkPassword(password):
             raise Exception("密码错误")
 
         if user.getAdmin():
@@ -505,10 +506,14 @@ def getRecord(request: HttpRequest) -> JsonResponse:
             raise Exception("尚未登录")
 
         tid = request.POST.get("id")
+        amount = request.POST.get("amount")
         if tid is not None:
             suffix = "and id>{}".format(tid)
         else:
             suffix = ""
+        if amount is not None:
+            suffix = "{} limit {}".format(suffix, amount)
+
         username = request.session.get("username")
         records = DAOForTrainRecord.getTrainRecordByUsername(username, suffix=suffix)
         for i in records:
@@ -598,6 +603,7 @@ def getAll(request: HttpRequest) -> JsonResponse:
 
 
 # 删除指定记录
+# POST
 def deleteRecord(request: HttpRequest):
     response = DEFAULT_RESPONSE_TEMPLATE
     response["data"] = {
@@ -614,6 +620,8 @@ def deleteRecord(request: HttpRequest):
 
         rid = request.POST.get("rid")
         record = DAOForTrainRecord.getTrainRecordById(rid)
+        if record is None:
+            raise Exception("记录不存在")
         if record.getUsername() != username and (not checkAdmin(request)):
             raise Exception("非本用户记录！")
         user = DAOForUser.getUserByUsername(username)
@@ -632,6 +640,7 @@ def deleteRecord(request: HttpRequest):
 
 
 # api状态检查
+# POST
 def apiCheck(request: HttpRequest):
     resp = {
         "status": "success"
@@ -640,6 +649,7 @@ def apiCheck(request: HttpRequest):
 
 
 # 刷新全体数据
+# POST
 def flushAll(request: HttpRequest):
     response = DEFAULT_RESPONSE_TEMPLATE
     response["data"] = {
@@ -680,6 +690,9 @@ def flushAll(request: HttpRequest):
     return JsonResponse(response)
 
 
+# 获取管理员验证码
+# http basic auth
+# please use this route to get code: https://xxx/invitecode/
 def getInviteCode(request: HttpRequest) -> HttpResponse:
     try:
         if 'HTTP_AUTHORIZATION' in request.META:
@@ -688,14 +701,14 @@ def getInviteCode(request: HttpRequest) -> HttpResponse:
             username, password = base64.b64decode(info.encode()).decode().split(":")
             if username:
                 user = DAOForUser.getUserByUsername(username)
-                if user is not None and user.getAdmin() and getMD5(password) == user.getPasshash():
+                if user is not None and user.getAdmin() and user.checkPassword(password):
                     response = HttpResponse(static.ADMIN_CODE.getCurrCode())
                 else:
-                    raise Exception("unauthoized!")
+                    raise Exception("unauthorized!")
             else:
-                raise Exception("unauthoized!")
+                raise Exception("unauthorized!")
         else:
-            raise Exception("unauthoized!")
+            raise Exception("unauthorized!")
     except Exception as e:
         response = HttpResponse(str(e), status=401)
         response['WWW-Authenticate'] = 'Basic realm="Secure resource"'

@@ -3,14 +3,14 @@ import time
 
 from main.utils import FileOP
 
-def getQRCode(word: str, 
-              autoRemove: bool=True, 
-              version: int=2, 
-              error_correction=qrcode.ERROR_CORRECT_H, 
-              box_size: int=10, 
-              border: int=4, 
-              mask_pattern=None) -> bytes:
 
+def getQRCode(word: str,
+              autoRemove: bool = True,
+              version: int = 2,
+              error_correction=qrcode.ERROR_CORRECT_H,
+              box_size: int = 10,
+              border: int = 4,
+              mask_pattern=None) -> bytes:
     qr = qrcode.QRCode(
         version=version,
         error_correction=error_correction,
@@ -31,10 +31,8 @@ def getQRCode(word: str,
         img.save(f)
     with open(tempFile, "rb") as f:
         stream = f.read()
-    
+
     if autoRemove:
         FileOP.removeFile(tempFile)
-    
+
     return stream
-
-

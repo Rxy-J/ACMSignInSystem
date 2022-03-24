@@ -10,13 +10,14 @@
 from main.utils.DAO import DBUtils
 from main.utils.ACM.ACM import ACMUser
 
+
 # 添加用户，以ACMUser为单位进行添加
 def addUser(user: ACMUser) -> int:
     try:
         db = None
         db = DBUtils.getConnection()  # 数据库连接
         cursor = db.cursor()  # 游标
-        sql = "insert into user(username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+        sql = "insert into user(username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, secret, email) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
 
         if user.getIsTrainning():
             status = "Y"
@@ -38,6 +39,7 @@ def addUser(user: ACMUser) -> int:
                              status,
                              user.getCurrRecordId(),
                              admin,
+                             user.getSecret(),
                              user.getEmail()))
         db.commit()
         return cursor.lastrowid
@@ -147,12 +149,12 @@ def getUserByUsername(username: str):
         db = DBUtils.getConnection()  # 数据库连接
         cursor = db.cursor()  # 游标
 
-        sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where username=%s;"
+        sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, secret, email from user where username=%s;"
 
         cursor.execute(sql, (username,))
         unformatedUser = cursor.fetchone()
 
-        if unformatedUser != None:
+        if unformatedUser is not None:
             return ACMUser(*unformatedUser)
         else:
             return None
@@ -171,14 +173,14 @@ def getUsersByStatus(isTrainning: bool) -> list:
 
         users = []
 
-        sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where isTrainning=%s order by uid;"
+        sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, secret, email from user where isTrainning=%s order by uid;"
 
         if isTrainning:
             status = "Y"
         else:
             status = "N"
 
-        cursor.execute(sql, (status))
+        cursor.execute(sql, (status,))
         unformatedUsers = cursor.fetchall()
 
         if unformatedUsers != None:
@@ -200,7 +202,7 @@ def getUsersByPriv(admin: bool) -> list:
 
         users = []
 
-        sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user where admin=%s order by uid;"
+        sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, secret, email from user where admin=%s order by uid;"
 
         if admin:
             status = "Y"
@@ -210,7 +212,7 @@ def getUsersByPriv(admin: bool) -> list:
         cursor.execute(sql, (status))
         unformatedUsers = cursor.fetchall()
 
-        if unformatedUsers != None:
+        if unformatedUsers is not None:
             for unformatedUser in unformatedUsers:
                 users.append(ACMUser(*unformatedUser))
         return users
@@ -228,12 +230,12 @@ def getAll():
         cursor = db.cursor()  # 游标
 
         users = []
-        sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, email from user order by uid;"
+        sql = "select username, passhash, name, department, major, joinTime, allTrainningTime, isTrainning, currRecordId, admin, secret, email from user order by uid;"
 
         cursor.execute(sql)
 
         unformatedUsers = cursor.fetchall()
-        if unformatedUsers != None:
+        if unformatedUsers is not None:
             for unformatedUser in unformatedUsers:
                 users.append(ACMUser(*unformatedUser))
 
